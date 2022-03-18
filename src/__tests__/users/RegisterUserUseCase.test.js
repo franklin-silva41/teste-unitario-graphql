@@ -799,7 +799,7 @@ describe("Cadastro de usuario", () => {
             }
         `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toThrow('"Syntax Error: Expected \\":\\"');
+    }).rejects.toThrow('"Syntax Error: Expected \\\":\\\"');
   });
 
   it("#1.44 => Cadastro do Usuario com String com o valor default", async () => {
