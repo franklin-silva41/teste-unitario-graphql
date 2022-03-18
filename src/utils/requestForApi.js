@@ -14,7 +14,7 @@ const requestForApiGraphQL = async (uri, query) => {
     json: true,
     resolveWithFullResponse: true,
   });
-
+console.log(response.body)
   return response;
 };
 
