@@ -827,8 +827,7 @@ describe("Cadastro de usuario", () => {
     const response = await requestForApiGraphQL(baseUrl, query);
     const { body } = response;
 
-    console.log(body);
-    /* expect(body.data).toHaveProperty("userRegister"); */
+    expect(body.data).toHaveProperty("userRegister");
   });
 
   it("#1.45 => userType String vazia ", async () => {
