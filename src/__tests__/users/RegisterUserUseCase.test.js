@@ -3,61 +3,474 @@ const { createFakerUser } = require("../../../src/utils/createFakerUser");
 const { requestForApiGraphQL } = require("../../utils/requestForApi");
 const baseUrl = "https://api-stg.sportidia.com/graphql";
 const { faker } = require("@faker-js/faker");
-const { response } = require("express");
-const { urlencoded } = require("express");
 const header = {
   "Content-Type": "application/json",
   //  Authorization:""
 };
 
-describe("cadastro de usuario", () => {
-  it("#1.0 =>Espero um usuario ", async () => {
-    const name = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    const userName = faker.internet.userName();
-    const email = faker.internet.email();
+describe("Cadastro de usuario", () => {
+  it("# 1.0 => Insiro um usuário novo na aplicação com todos os dados!", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+
     const query = `
-        mutation registrandoUser{
+      mutation registrandoUser{
+          userRegister(
+            first_name: "${firstName}"
+            last_name: "${lastName}"
+            user_name: "${userName}"
+            email: "${email}"
+            password: "123456"
+            user_type: "default"
+            avatar: "https://midiasegura.com.br/wp-content/uploads/2020/05/criar-um-avatar-no-facebook-ficou-ainda-mais-facil-veja-como-fazer.png"
+            birth_date: "2000-01-01"
+            genre: "Feminino"
+          ){
+            user {
+              first_name
+              last_name
+              user_name
+              email
+              password
+              user_type
+              avatar
+              birth_date
+              genre
+            }
+          },
+      }
+    `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { statusCode, body } = response;
+
+    expect(body.data).toHaveProperty("userRegister");
+    expect(statusCode).toBe(200);
+  });
+
+  it("#1.1 => Insiro dados nos campos obrigatorios !", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+
+    const query = `
+    mutation registrandoUser1{
+    userRegister(
+      first_name: "${firstName}"
+      last_name: "${lastName}"
+      user_name: "${userName}"
+      email: "${email}"
+      password: "123456"
+    ){
+        user {
+          first_name
+          last_name
+          user_name
+          email
+          password
+          user_type
+          avatar
+          birth_date
+          genre
+        }
+      }
+    }
+  `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { statusCode, body } = response;
+
+    expect(body.data).toHaveProperty("userRegister");
+    expect(body.data.userRegister.user).toHaveProperty("genre");
+    expect(body.data.userRegister.user).toEqual(
+      expect.objectContaining({
+        first_name: firstName,
+      })
+    );
+    expect(statusCode).toBe(200);
+  });
+
+  it("#1.2 => Insiro um valor string no campo first_name", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+
+    const query = `
+    mutation testfirstname{
+      userRegister(
+        first_name: "${firstName}"
+        last_name: "${lastName}"
+        user_name: "${userName}"
+        email: "${email}"
+        password: "testfirst"
+      ){
+        user {
+          first_name
+        }
+      }
+    }
+  `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body, statusCode } = response;
+
+    expect(body.data.userRegister).toHaveProperty("user");
+    expect(body.data.userRegister.user.first_name).toEqual(firstName);
+
+    expect(statusCode).toBe(200);
+  });
+
+  it("#1.3 Insiro um valor vazio no campo first_name", async () => {
+    const { lastName, userName, email } = createFakerUser();
+
+    const query = `
+    mutation testfirstname{
+      userRegister(
+        first_name: ""
+        last_name: "${lastName}"
+        user_name: "${userName}"
+        email: "${email}"
+        password: "testfirst"
+      ){
+        user {
+          first_name
+        }
+      }
+    }
+  `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body, statusCode } = response;
+
+    expect(body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: "Bad Request Exception",
+        }),
+      ])
+    );
+
+    expect(statusCode).toBe(200);
+  });
+  it("#1.4 Insiro um valor númerico no campo first_name", async () => {
+    expect(async () => {
+      const { lastName, userName, email } = createFakerUser();
+
+      const query = `
+        mutation testfirstname{
+          userRegister(
+            first_name: 123456
+            last_name: "${lastName}"
+            user_name: "${userName}"
+            email: "${email}"
+            password: "testfirst"
+          ){
+            user {
+              first_name
+            }
+          }
+        }
+      `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: 123456");
+  });
+  it("#1.5 Insiro um serie de caracteres especiais no campo first_name ", async () => {
+    const { lastName, userName, email } = createFakerUser();
+
+    const query = `
+      mutation testfirstname{
+        userRegister(
+          first_name: "@@@@@@@"
+          last_name: "${lastName}"
+          user_name: "${userName}"
+          email: "${email}"
+          password: "testfirst"
+        ){
+          user {
+            first_name
+          }
+        }
+      }
+      `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body.data.userRegister.user.first_name).toEqual("@@@@@@@");
+  });
+  it("#1.6 Insiro um valor boolean no campo first_name", () => {
+    expect(async () => {
+      const { lastName, userName, email } = createFakerUser();
+
+      const query = `
+        mutation testfirstname{
+          userRegister(
+              first_name: true
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "testfirst"
+          ){
+            user {
+              first_name
+            }
+          }
+        }
+      `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: true");
+  });
+  it("#1.7 Insiro um valor boolean no campo first_name", () => {
+    expect(async () => {
+      const { lastName, userName, email } = createFakerUser();
+
+      const query = `
+        mutation testfirstname{
+          userRegister(
+              first_name: false
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "testfirst"
+          ){
+            user {
+              first_name
+            }
+          }
+        }
+      `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: false");
+  });
+  it("#1.8 Insiro um valor null no campo first_name", async () => {
+    expect(async () => {
+      const { lastName, userName, email } = createFakerUser();
+
+      const query = `
+        mutation testfirstname{
+          userRegister(
+              first_name: false
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "testfirst"
+          ){
+            user {
+              first_name
+            }
+          }
+        }
+      `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: false");
+  });
+  it("#1.9 Insiro um valor null no campo first_name", async () => {
+    expect(async () => {
+      const { lastName, userName, email } = createFakerUser();
+
+      const query = `
+          mutation testfirstname{
             userRegister(
-                first_name: "${name}"
+                first_name: "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium"
                 last_name: "${lastName}"
                 user_name: "${userName}"
                 email: "${email}"
-                password: "teste123"
-                user_type: "default"
-                avatar: "testegenre"
-                birth_date: "2000-01-01"
-                genre: null
+                password: "testfirst"
             ){
-                user {
-                    first_name
-                    last_name
-                    user_name
-                    email
-                    password
-                    user_type
-                    avatar
-                    birth_date
-                    genre
-                }
+              user {
+                first_name
+              }
             }
+          }
+        `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).toThrow();
+  });
+  it("#1.10 insiro um valor string no campo last_name ", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+
+    const query = `
+      mutation testlastname{
+        userRegister(
+          first_name: "${firstName}"
+          last_name: "${lastName}"
+          user_name: "${userName}"
+          email: "${email}"
+          password: "testlast"
+        ){
+          user {
+            last_name
+          }
         }
-      `;
-    const response = await rp.post({
-      uri: baseUrl,
-      body: {
-        query,
-      },
-      header,
-      json: true,
-      resolveWithFullResponse: true,
-    });
+      }
+    `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
 
     const { body, statusCode } = response;
-    console.log(body);
+
+    expect(body.data.userRegister.user).toHaveProperty("last_name");
+    expect(body.data.userRegister.user.last_name).toBe(lastName);
     expect(statusCode).toBe(200);
-    expect(body.data.userRegister.user).toHaveProperty("first_name");
   });
+
+  it("#1.11 Insiro um valor vazio no campo last_name", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+
+    const query = `
+          mutation testlastname{
+            userRegister(
+                first_name: "${firstName}"
+                last_name: ""
+                user_name: "${userName}"
+                email: "${email}"          
+                password: "testlast"
+            ){
+              user {
+                last_name
+              }
+            }
+          }
+        `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: "Bad Request Exception",
+        }),
+      ])
+    );
+  });
+
+  it("#1.12 Insiro um valor númerico no campo last_name", async () => {
+    expect(async () => {
+      const { firstName, userName, email } = createFakerUser();
+
+      const query = `
+        mutation testlastname{
+          userRegister(
+            first_name: "${firstName}"
+            last_name: 123456
+            user_name: "${userName}"
+            email: "${email}"
+            password: "testlast"
+          ){
+            user {
+              last_name
+            }
+          }
+        }
+      `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: 123456");
+  });
+
+  it("#1.13 Insiro um serie de caracteres especiais no campo last_name", async () => {
+    expect(async () => {
+      const { firstName, userName, email } = createFakerUser();
+
+      const query = `
+        mutation testlastname{
+          userRegister(
+            first_name: "${firstName}"
+            last_name: "@@@@@@@"
+            user_name: "${userName}"
+            email: "${email}"
+            password: "testlast"
+          ){
+            user {
+              last_name
+            }
+          }
+        }
+      `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).toThrow();
+  });
+
+  it("#1.14 Insiro um valor boolean no campo last_name", async () => {
+    expect(async () => {
+      const { firstName, userName, email } = createFakerUser();
+
+      const query = `
+          mutation testlastname{
+            userRegister(
+              first_name: "${firstName}"
+              last_name: true
+              user_name: "${userName}"
+              email: "${email}"
+              password: "testlast"
+            ){
+              user {
+                last_name
+              }
+            }
+          }
+        `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: true");
+  });
+
+  it("#1.15 Insiro um valor boolean no campo last_name", async () => {
+    expect(async () => {
+      const { firstName, userName, email } = createFakerUser();
+
+      const query = `
+          mutation testlastname{
+            userRegister(
+              first_name: "${firstName}"
+              last_name: false
+              user_name: "${userName}"
+              email: "${email}"
+              password: "testlast"
+            ){
+              user {
+                last_name
+              }
+            }
+          }
+        `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: false");
+  });
+
+  it("#1.16 Insiro um valor null no campo last_name", async () => {
+    expect(async () => {
+      const { firstName, userName, email } = createFakerUser();
+
+      const query = `
+          mutation testlastname{
+            userRegister(
+              first_name: "${firstName}"
+              last_name: null
+              user_name: "${userName}"
+              email: "${email}"
+              password: "testlast"
+            ){
+              user{
+                last_name
+              }
+            }
+          }
+        `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow('"Expected value of type \\"String!\\"');
+  });
+
   it("#1.35 => Email invalido", async () => {
     const name = faker.name.firstName();
     const lastName = faker.name.lastName();
@@ -92,7 +505,6 @@ describe("cadastro de usuario", () => {
       resolveWithFullResponse: true,
     });
     const { body, statusCode } = response;
-    console.log(body);
     expect(statusCode).toBe(200);
     expect(body.errors[0].message).toBe("Bad Request Exception");
   });
@@ -130,7 +542,6 @@ describe("cadastro de usuario", () => {
       resolveWithFullResponse: true,
     });
     const { body, statusCode } = response;
-    console.log(body.data);
     expect(statusCode).toBe(200);
     expect(body).toHaveProperty("data");
   });
@@ -168,7 +579,6 @@ describe("cadastro de usuario", () => {
       resolveWithFullResponse: true,
     });
     const { body, statusCode } = response;
-    console.log(body);
     expect(statusCode).toBe(200);
     expect(body.errors[0].message).toBe("Bad Request Exception");
   });
@@ -225,7 +635,7 @@ describe("cadastro de usuario", () => {
                     last_name: "${lastName}"
                     user_name: "${userName}"
                     email: "${email}"
-                    password: ${password}
+                    password: "${password}"
                     user_type: "default"
                     avatar: "testegenre"
                     birth_date: "2000-01-01"
@@ -389,7 +799,6 @@ describe("cadastro de usuario", () => {
         `;
       const response = await requestForApiGraphQL(baseUrl, query);
       const { body } = response;
-      console.log(body);
     }).rejects.toThrow('"Syntax Error: Expected \\":\\"');
   });
 
@@ -417,7 +826,6 @@ describe("cadastro de usuario", () => {
     `;
     const response = await requestForApiGraphQL(baseUrl, query);
     const { body } = response;
-    console.log(body.data);
     expect(body.data).toHaveProperty("userRegister");
   });
 
