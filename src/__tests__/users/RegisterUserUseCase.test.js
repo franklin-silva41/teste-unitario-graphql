@@ -886,4 +886,294 @@ describe("Cadastro de usuario", () => {
       await requestForApiGraphQL(baseUrl, query);
     }).rejects.toEqual(new Error('Syntax Error: Unexpected "@".'));
   });
+  it("#1.48 => userType com o valor boolean(true)", async () => {
+    const { name, lastName, userName, email } = createFakerUser();
+    expect(async () => {
+      const userType = true;
+      const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${name}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  user_type: ${userType}
+                  avatar: "testegenre"
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow('"String cannot represent a non string value: true"');
+  });
+  it("#1.49 => userType com o valor boolean(false)", async () => {
+    const { name, lastName, userName, email } = createFakerUser();
+    expect(async () => {
+      const userType = false;
+      const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${name}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  user_type: ${userType}
+                  avatar: "testegenre"
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow('"String cannot represent a non string value: false"');
+  });
+
+  it("#1.50 => userType com o valor null", async () => {
+    const { name, lastName, userName, email } = createFakerUser();
+
+    const userType = null;
+    const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${name}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  user_type: ${userType}
+                  avatar: "testegenre"
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+    const { body } = response;
+    expect(body).toHaveProperty("errors");
+  });
+
+  it("#1.51 => userType com grande massa de caracters", async () => {
+    const { name, lastName, userName, email } = createFakerUser();
+
+    const userType =
+      "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
+    const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${name}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  user_type: "${userType}"
+                  avatar: "testegenre"
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+    const { body } = response;
+    expect(body).toHaveProperty("errors");
+  });
+
+  it("#1.52 => avatar com String", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+
+    const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${firstName}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  avatar: "https://midiasegura.com.br/wp-content/uploads/2020/05/criar-um-avatar-no-facebook-ficou-ainda-mais-facil-veja-como-fazer.png"
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+  it("#1.53 => avatar com uma String vazia", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+
+    const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${firstName}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  avatar: ""
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.54 => avatar com Numero", async () => {
+    expect(async () => {
+      const { firstName, lastName, userName, email } = createFakerUser();
+      const avatar = 123456;
+      const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${firstName}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  avatar: ${avatar}
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow("String cannot represent a non string value: 123456");
+  });
+
+  it("#1.55 => avatar com caracter especial", async () => {
+    expect(async () => {
+      const { firstName, lastName, userName, email } = createFakerUser();
+      const avatar = "@@@@@";
+      const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${firstName}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  avatar: ${avatar}
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow('"Syntax Error: Unexpected \\"@\\"."');
+  });
+  it("#1.56 => avatar com Bolean(true)", async () => {
+    expect(async () => {
+      const { firstName, lastName, userName, email } = createFakerUser();
+      const avatar = true;
+      const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${firstName}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  avatar: ${avatar}
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow('"String cannot represent a non string value: true"');
+  });
+
+  it("#1.56 => avatar com Bolean(False)", async () => {
+    expect(async () => {
+      const { firstName, lastName, userName, email } = createFakerUser();
+      const avatar = false;
+      const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${firstName}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  avatar: ${avatar}
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toThrow('"String cannot represent a non string value: false"');
+  });
+
+  it("#1.57 => avatar com valor Null", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const avatar = null;
+    const query = `
+          mutation registrandoUser{
+              userRegister(
+                  first_name: "${firstName}"
+                  last_name: "${lastName}"
+                  user_name: "${userName}"
+                  email: "${email}"
+                  password: "password"
+                  avatar: ${avatar}
+                  birth_date: "2000-01-01"
+                  genre: null
+              ){
+                  user{
+                      first_name
+                  }
+              }
+          }
+      `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
 });
