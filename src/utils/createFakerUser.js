@@ -7,13 +7,16 @@ const createFakerUser = () => {
 
   const userName = faker.internet.userName().toLowerCase();
 
-  const email = faker.internet.email();
+  const email = `${userName}@teste.tst`;
+
+  const password = faker.internet.password();
 
   return {
     firstName,
     lastName,
     userName,
     email,
+    password,
   };
 };
 

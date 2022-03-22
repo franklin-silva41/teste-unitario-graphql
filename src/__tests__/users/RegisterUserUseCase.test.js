@@ -84,67 +84,48 @@ describe("Cadastro de usuario", () => {
     expect(statusCode).toBe(200);
   });
 
-  it("#1.2 => Insiro um valor string no campo first_name", async () => {
-    const { firstName, lastName, userName, email } = createFakerUser();
+  it("Insiro valores vazios em alguns campos", () => {
+    test.each([
+      ["first_name", ""],
+      ["last_name", ""],
+      ["email", ""],
+      ["password", ""],
+      ["user_name", ""],
+    ])(
+      "Espero que me retorne um erro quando tentamos cadastrar um campo com string vazia",
+      async (campo, valor) => {
+        const { firstName, lastName, userName, email, password } =
+          createFakerUser();
 
-    const query = `
-    mutation testfirstname{
-      userRegister(
-        first_name: "${firstName}"
-        last_name: "${lastName}"
-        user_name: "${userName}"
-        email: "${email}"
-        password: "testfirst"
-      ){
-        user {
-          first_name
+        const dataTest = {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          password,
+          user_name: userName,
+        };
+
+        dataTest[campo] = valor;
+
+        const query = `
+        mutation testvaluesempty{
+          userRegister(
+            first_name: "${dataTest.first_name}"
+            last_name: "${dataTest.last_name}"
+            user_name: "${dataTest.user_name}"
+            email: "${dataTest.email}"
+            password: "${dataTest.password}"
+          ){
+            user {
+              ${campo}
+            }
+          }
         }
+      `;
+
+        await requestForApiGraphQL(baseUrl, query);
       }
-    }
-  `;
-
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body, statusCode } = response;
-
-    expect(body.data.userRegister).toHaveProperty("user");
-    expect(body.data.userRegister.user.first_name).toEqual(firstName);
-
-    expect(statusCode).toBe(200);
-  });
-
-  it("#1.3 Insiro um valor vazio no campo first_name", async () => {
-    const { lastName, userName, email } = createFakerUser();
-
-    const query = `
-    mutation testfirstname{
-      userRegister(
-        first_name: ""
-        last_name: "${lastName}"
-        user_name: "${userName}"
-        email: "${email}"
-        password: "testfirst"
-      ){
-        user {
-          first_name
-        }
-      }
-    }
-  `;
-
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body, statusCode } = response;
-
-    expect(body.errors).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          message: "Bad Request Exception",
-        }),
-      ])
     );
-
-    expect(statusCode).toBe(200);
   });
 
   it("#1.4 Insiro um valor númerico no campo first_name", async () => {
@@ -170,8 +151,6 @@ describe("Cadastro de usuario", () => {
       await requestForApiGraphQL(baseUrl, query);
     }).rejects.toThrow("String cannot represent a non string value: 123456");
   });
-
- 
 
   it("#1.6 Insiro um valor boolean no campo first_name", async () => {
     await expect(async () => {
@@ -245,8 +224,6 @@ describe("Cadastro de usuario", () => {
     }).rejects.toThrowError();
   });
 
-
-
   it("#1.10 insiro um valor string no campo last_name ", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
 
@@ -275,38 +252,6 @@ describe("Cadastro de usuario", () => {
     expect(statusCode).toBe(200);
   });
 
-  it("#1.11 Insiro um valor vazio no campo last_name", async () => {
-    const { firstName, lastName, userName, email } = createFakerUser();
-
-    const query = `
-          mutation testlastname{
-            userRegister(
-                first_name: "${firstName}"
-                last_name: ""
-                user_name: "${userName}"
-                email: "${email}"          
-                password: "testlast"
-            ){
-              user {
-                last_name
-              }
-            }
-          }
-        `;
-
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body } = response;
-
-    expect(body.errors).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          message: "Bad Request Exception",
-        }),
-      ])
-    );
-  });
-
   it("#1.12 Insiro um valor númerico no campo last_name", async () => {
     await expect(async () => {
       const { firstName, userName, email } = createFakerUser();
@@ -330,8 +275,6 @@ describe("Cadastro de usuario", () => {
       await requestForApiGraphQL(baseUrl, query);
     }).rejects.toThrow("String cannot represent a non string value: 123456");
   });
-
-  
 
   it("#1.14 Insiro um valor boolean no campo last_name", async () => {
     await expect(async () => {
@@ -405,7 +348,6 @@ describe("Cadastro de usuario", () => {
     }).rejects.toBeInstanceOf(Error);
   });
 
-
   it("#1.35 => Email invalido", async () => {
     const { firstName, lastName, userName } = createFakerUser();
 
@@ -468,36 +410,6 @@ describe("Cadastro de usuario", () => {
     expect(body).toHaveProperty("data");
   });
 
-  it("#1.37 => Senha com uma String vazia", async () => {
-    const { firstName, lastName, userName, email } = createFakerUser();
-
-    const query = `
-        mutation registrandoUser{
-            userRegister(
-                first_name: "${firstName}"
-                last_name: "${lastName}"
-                user_name: "${userName}"
-                email: "${email}"
-                password: ""
-                user_type: "default"
-                avatar: "testegenre"
-                birth_date: "2000-01-01"
-                genre: null
-            ){
-                user{
-                    first_name
-                }
-            }
-        }
-      `;
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body, statusCode } = response;
-
-    expect(statusCode).toBe(200);
-    expect(body.errors[0].message).toBe("Bad Request Exception");
-  });
-
   it("#1.38 => Senha com numeros", async () => {
     await expect(async () => {
       const { firstName, lastName, userName, email } = createFakerUser();
@@ -529,9 +441,6 @@ describe("Cadastro de usuario", () => {
       new Error("String cannot represent a non string value: 123456")
     );
   });
-
-
-    
 
   it("#1.40 => Dar erro ao tentar criar SENHA COM BOOLEAN(true)", async () => {
     await expect(async () => {
@@ -627,7 +536,6 @@ describe("Cadastro de usuario", () => {
     );
   });
 
-
   it("#1.44 => Cadastro do Usuario com String com o valor default", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
 
@@ -654,33 +562,6 @@ describe("Cadastro de usuario", () => {
     const { body } = response;
 
     expect(body.data).toHaveProperty("userRegister");
-  });
-
-  it("#1.45 => userType String vazia ", async () => {
-    await expect(async () => {
-      const { firstName, lastName, userName, email } = createFakerUser();
-
-      const query = `
-                mutation registrandoUser{
-                    userRegister(
-                        first_name: "${firstName}"
-                        last_name: "${lastName}"
-                        user_name: "${userName}"
-                        email: "${email}"
-                        password: "password"
-                        user_type: ""
-                        avatar: "testegenre"
-                        birth_date: "2000-01-01"
-                        genre: null
-                    ){
-                        user{
-                            first_name
-                        }
-                    }
-                }
-            `;
-      await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toThrowError();
   });
 
   it("#1.46 => userType com numero", async () => {
@@ -713,8 +594,6 @@ describe("Cadastro de usuario", () => {
       new Error("String cannot represent a non string value: 123456")
     );
   });
-
- 
 
   it("#1.48 => userType com o valor boolean(true)", async () => {
     const { name, lastName, userName, email } = createFakerUser();
@@ -800,8 +679,6 @@ describe("Cadastro de usuario", () => {
     expect(body).toHaveProperty("errors");
   });
 
- 
-
   it("#1.52 => avatar com String", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
 
@@ -814,32 +691,6 @@ describe("Cadastro de usuario", () => {
                   email: "${email}"
                   password: "password"
                   avatar: "https://midiasegura.com.br/wp-content/uploads/2020/05/criar-um-avatar-no-facebook-ficou-ainda-mais-facil-veja-como-fazer.png"
-                  birth_date: "2000-01-01"
-                  genre: null
-              ){
-                  user{
-                      first_name
-                  }
-              }
-          }
-      `;
-    const response = await requestForApiGraphQL(baseUrl, query);
-    const { body } = response;
-    expect(body.data.userRegister).toHaveProperty("user");
-  });
-
-  it("#1.53 => avatar com uma String vazia", async () => {
-    const { firstName, lastName, userName, email } = createFakerUser();
-
-    const query = `
-          mutation registrandoUser{
-              userRegister(
-                  first_name: "${firstName}"
-                  last_name: "${lastName}"
-                  user_name: "${userName}"
-                  email: "${email}"
-                  password: "password"
-                  avatar: ""
                   birth_date: "2000-01-01"
                   genre: null
               ){
@@ -879,8 +730,6 @@ describe("Cadastro de usuario", () => {
       await requestForApiGraphQL(baseUrl, query);
     }).rejects.toThrow("String cannot represent a non string value: 123456");
   });
-
-  
 
   it("#1.56 => avatar com Bolean(true)", async () => {
     await expect(async () => {
@@ -965,7 +814,6 @@ describe("Cadastro de usuario", () => {
     expect(body.data.userRegister).toHaveProperty("user");
   });
 
-  
   it("#1.60 => No campo birth_day inserir um valor String", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
     const birth_day = "2000-01-01";
@@ -991,35 +839,6 @@ describe("Cadastro de usuario", () => {
 
     const { body } = response;
     expect(body.data.userRegister).toHaveProperty("user");
-  });
-
-  it("#1.61 => No campo birth_day inserir um valor String vazia", async () => {
-    const { firstName, lastName, userName, email } = createFakerUser();
-    const birth_day = "";
-    const query = `
-      mutation registrandoUser{
-          userRegister(
-              first_name: "${firstName}"
-              last_name: "${lastName}"
-              user_name: "${userName}"
-              email: "${email}"
-              password: "password"
-              avatar: "avatar"
-              birth_date: "${birth_day}"
-              genre: null
-          ){
-              user{
-                  first_name
-              }
-          }
-      }
-  `;
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body } = response;
-    expect(body.errors[0].message).toBe(
-      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
-    );
   });
 
   it("#1.62 => No campo birth_day inserir um valor numerico ", async () => {
@@ -1055,8 +874,6 @@ describe("Cadastro de usuario", () => {
       ])
     );
   });
-
- 
 
   it("#1.64 => No campo birth_day inserir um valor boolean(true)", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
@@ -1204,8 +1021,6 @@ describe("Cadastro de usuario", () => {
     );
   });
 
- 
-
   it("#1.70 => No campo genre inserir uma string valida", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
     const genre = "masculino";
@@ -1290,8 +1105,6 @@ describe("Cadastro de usuario", () => {
       "String cannot represent a non string value: 123456"
     );
   });
-
-  
 
   it("#1.74 => No campo genre inserir um valor Boolean(true)", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
@@ -1386,7 +1199,6 @@ describe("Cadastro de usuario", () => {
     expect(body.data.userRegister).toHaveProperty("user");
   });
 
-  
   it("#1.78 => No campo push_id inserir uma String", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
     const push_id = "testepushid";
@@ -1414,35 +1226,6 @@ describe("Cadastro de usuario", () => {
 
     const { body } = response;
     expect(body.data.userRegister).toHaveProperty("user");
-  });
-
-  it("#1.79 => No campo push_id inserir uma String vazia", async () => {
-    const { firstName, lastName, userName, email } = createFakerUser();
-    const push_id = "";
-    const query = `
-       mutation registrandoUser{
-           userRegister(
-               first_name: "${firstName}"
-               last_name: "${lastName}"
-               user_name: "${userName}"
-               email: "${email}"
-               password: "password"
-               avatar: "avatar"
-               birth_date: "01/01/1999"
-               push_id:"${push_id}"
-           ){
-               user{
-                   first_name
-                   push_id
-               }
-           }
-       }
-   `;
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body } = response;
-    console.log(body.data.userRegister.user.push_id);
-    expect(body.data.userRegister.user.push_id).toBe(null);
   });
 
   it("#1.80 => No campo push_id inserir um valor Numerico", async () => {
@@ -1477,7 +1260,6 @@ describe("Cadastro de usuario", () => {
       "String cannot represent a non string value: 123456"
     ); */
   });
-
 
   it("#1.82 => No campo push_id inserir um boolean(true)", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
@@ -1574,38 +1356,6 @@ describe("Cadastro de usuario", () => {
     expect(body.data.userRegister.user.push_id).toBe("null");
   });
 
-  it("#1.85 => No campo push_id inserir um valor Null", async () => {
-    const { firstName, lastName, userName, email } = createFakerUser();
-    const push_id =
-      "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
-    const query = `
-       mutation registrandoUser{
-           userRegister(
-               first_name: "${firstName}"
-               last_name: "${lastName}"
-               user_name: "${userName}"
-               email: "${email}"
-               password: "password"
-               avatar: "avatar"
-               birth_date: "01/01/1999"
-               push_id:"${push_id}"
-           ){
-               user{
-                   first_name
-                   push_id
-               }
-           }
-       }
-   `;
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body } = response;
-
-    expect(body).toHaveProperty("errors");
-
-    /* expect(body.errors[0].message).toBe("Bad Request Exception"); */
-  });
-
   it("#1.86 => No campo language inserir uma String", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
     const language = "testelanguage";
@@ -1697,8 +1447,6 @@ describe("Cadastro de usuario", () => {
       "String cannot represent a non string value: 123456"
     ); */
   });
-
-  
 
   it("#1.90 => No campo language inserir um Boolean(true)", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
@@ -1796,7 +1544,5 @@ describe("Cadastro de usuario", () => {
     const { body } = response;
     expect(body.data.userRegister.user.language).toBe("null");
   });
-
-  
 });
 //
