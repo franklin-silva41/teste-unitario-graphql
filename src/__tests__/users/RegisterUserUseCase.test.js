@@ -938,7 +938,9 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toEqual(new Error("String cannot represent a non string value: false"))  ;
+    }).rejects.toEqual(
+      new Error("String cannot represent a non string value: false")
+    );
   });
 
   it("#1.50 => userType com o valor null", async () => {
@@ -1126,11 +1128,13 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toEqual(new Error("String cannot represent a non string value: true"));
+    }).rejects.toEqual(
+      new Error("String cannot represent a non string value: true")
+    );
   });
 
-  it("#1.56 => avatar com Bolean(False)", async () => {
-    await expect(async () => {
+  it("#1.57 => avatar com Bolean(False)", async () => {
+    expect(async () => {
       const { firstName, lastName, userName, email } = createFakerUser();
       const avatar = false;
       const query = `
@@ -1152,10 +1156,12 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toEqual(new Error('String cannot represent a non string value: false'));
+    }).rejects.toEqual(
+      new Error("String cannot represent a non string value: false")
+    );
   });
 
-  it("#1.57 => avatar com valor Null", async () => {
+  it("#1.58 => avatar com valor Null", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
     const avatar = null;
     const query = `
@@ -1181,4 +1187,1070 @@ describe("Cadastro de usuario", () => {
     const { body } = response;
     expect(body.data.userRegister).toHaveProperty("user");
   });
+
+  it("#1.59 => avatar com uma massa de caracteres grande", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const avatar =
+      "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
+    const query = `
+        mutation registrandoUser{
+            userRegister(
+                first_name: "${firstName}"
+                last_name: "${lastName}"
+                user_name: "${userName}"
+                email: "${email}"
+                password: "password"
+                avatar: "${avatar}"
+                birth_date: "2000-01-01"
+                genre: null
+            ){
+                user{
+                    first_name
+                }
+            }
+        }
+    `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+  });
+
+  it("#1.60 => No campo birth_day inserir um valor String", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = "2000-01-01";
+    const query = `
+      mutation registrandoUser{
+          userRegister(
+              first_name: "${firstName}"
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "password"
+              avatar: "avatar"
+              birth_date: "${birth_day}"
+              genre: null
+          ){
+              user{
+                  first_name
+              }
+          }
+      }
+  `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.61 => No campo birth_day inserir um valor String vazia", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = "";
+    const query = `
+      mutation registrandoUser{
+          userRegister(
+              first_name: "${firstName}"
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "password"
+              avatar: "avatar"
+              birth_date: "${birth_day}"
+              genre: null
+          ){
+              user{
+                  first_name
+              }
+          }
+      }
+  `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.errors[0].message).toBe(
+      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
+    );
+  });
+
+  it("#1.62 => No campo birth_day inserir um valor numerico ", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = 123456;
+    const query = `
+      mutation registrandoUser{
+          userRegister(
+              first_name: "${firstName}"
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "password"
+              avatar: "avatar"
+              birth_date: "${birth_day}"
+              genre: null
+          ){
+              user{
+                  first_name
+              }
+          }
+      }
+  `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message,
+        }),
+      ])
+    );
+  });
+
+  it("#1.63 => No campo birth_day inserir caracteres especiais", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = "@@@@@@@";
+    const query = `
+      mutation registrandoUser{
+          userRegister(
+              first_name: "${firstName}"
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "password"
+              avatar: "avatar"
+              birth_date: "${birth_day}"
+              genre: null
+          ){
+              user{
+                  first_name
+              }
+          }
+      }
+  `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body.errors[0].message).toBe(
+      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
+    );
+  });
+
+  it("#1.64 => No campo birth_day inserir um valor boolean(true)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = true;
+    const query = `
+      mutation registrandoUser{
+          userRegister(
+              first_name: "${firstName}"
+              last_name: "${lastName}"
+              user_name: "${userName}"
+              email: "${email}"
+              password: "password"
+              avatar: "avatar"
+              birth_date: "${birth_day}"
+              genre: null
+          ){
+              user{
+                  first_name
+              }
+          }
+      }
+  `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body.errors[0].message).toBe(
+      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
+    );
+  });
+
+  it("#1.65 => No campo birth_day inserir um valor boolean(false)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = true;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "${birth_day}"
+               genre: null
+           ){
+               user{
+                   first_name
+               }
+           }
+       }
+   `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.errors[0].message).toBe(
+      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
+    );
+  });
+
+  it("#1.66 => No campo birth_day inserir um valor null", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = null;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "${birth_day}"
+               genre: null
+           ){
+               user{
+                   first_name
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.errors[0].message).toBe(
+      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
+    );
+  });
+
+  it("#1.67 => No campo birth_day inserir uma data dentro de uma String ex.('01/01/2000')", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = "01/01/2000";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "${birth_day}"
+               genre: null
+           ){
+               user{
+                   first_name
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.68 => No campo birth_day inserir uma data dentro de uma String sem separação ex.('01012000')", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day = "01012000";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "${birth_day}"
+               genre: null
+           ){
+               user{
+                   first_name
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.errors[0].message).toBe(
+      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
+    );
+  });
+
+  it("#1.69 => No campo birth_day inserir uma data com grande massa de caracteres", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const birth_day =
+      "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "${birth_day}"
+               genre: null
+           ){
+               user{
+                   first_name
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body.errors[0].message).toBe(
+      'USERNOTSAVED Error: QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN"'
+    );
+  });
+
+  it("#1.70 => No campo genre inserir uma string valida", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre = "masculino";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.71 => No campo genre inserir uma valor String vazia", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre = "";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister.user.genre).toBe("other");
+  });
+
+  it("#1.72 => No campo genre inserir uma valor Numerico", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre = 123456;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: 123456"
+    );
+  });
+
+  it("#1.73 => No campo genre inserir Caracteres especiais", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre = "@@@@@@";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: @@@@@"
+    ); */
+  });
+
+  it("#1.74 => No campo genre inserir um valor Boolean(true)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre = true;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: true"
+    ); */
+  });
+  it("#1.75 => No campo genre inserir um valor Boolean(false)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre = false;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: true"
+    ); */
+  });
+
+  it("#1.76 => No campo genre inserir um valor null", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre = null;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.77 => No campo genre inserir uma String com uma grande massa", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const genre =
+      "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "${genre}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe("Bad Request Exception"); */
+  });
+
+  it("#1.78 => No campo push_id inserir uma String", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id = "testepushid";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               push_id:"${push_id}"
+           ){
+               user{
+                   first_name
+                   genre
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.79 => No campo push_id inserir uma String vazia", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id = "";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               push_id:"${push_id}"
+           ){
+               user{
+                   first_name
+                   push_id
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    console.log(body.data.userRegister.user.push_id);
+    expect(body.data.userRegister.user.push_id).toBe(null);
+  });
+
+  it("#1.80 => No campo push_id inserir um valor Numerico", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id = 123456;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               push_id:"${push_id}"
+           ){
+               user{
+                   first_name
+                   push_id
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: 123456"
+    ); */
+  });
+
+  it("#1.81 => No campo push_id inserir caracteres especiais", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id = "@@@@@@@";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               push_id:"${push_id}"
+           ){
+               user{
+                   first_name
+                   push_id
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.82 => No campo push_id inserir um boolean(true)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id = true;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               push_id:"${push_id}"
+           ){
+              user {
+                first_name
+                push_id
+              }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: true"
+    ); */
+  });
+
+  it("#1.83 => No campo push_id inserir um boolean(false)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id = false;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               push_id:"${push_id}"
+           ){
+               user{
+                   first_name
+                   push_id
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: false"
+    ); */
+  });
+
+  it("#1.84 => No campo push_id inserir um valor Null", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id = null;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               push_id:"${push_id}"
+           ){
+               user{
+                   first_name
+                   push_id
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    console.log(body.data.userRegister.user.push_id);
+    expect(body.data.userRegister.user.push_id).toBe("null");
+  });
+
+  it("#1.85 => No campo push_id inserir um valor Null", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const push_id =
+      "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               push_id:"${push_id}"
+           ){
+               user{
+                   first_name
+                   push_id
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe("Bad Request Exception"); */
+  });
+
+  it("#1.86 => No campo language inserir uma String", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language = "testelanguage";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+               user{
+                   first_name
+                   language
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.87 => No campo language inserir uma String vazia", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language = "";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+              user{
+                first_name
+                language
+              }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister.user.language).toBe("null");
+  });
+
+  it("#1.88 => No campo language inserir um valor Numerico", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language = 123456;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+               user{
+                   first_name
+                   language
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: 123456"
+    ); */
+  });
+
+  it("#1.89 => No campo language inserir caracteres especiais", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language = "@@@@@";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+               user{
+                   first_name
+                   language
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister).toHaveProperty("user");
+  });
+
+  it("#1.90 => No campo language inserir um Boolean(true)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language = true;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+              user {
+                first_name
+                language
+              }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: true"
+    ); */
+  });
+
+  it("#1.91 => No campo language inserir um Boolean(false)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language = false;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+               user{
+                   first_name
+                   language
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe(
+      "String cannot represent a non string value: false"
+    ); */
+  });
+
+  it("#1.92 => No campo language inserir um Boolean(false)", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language = false;
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+               user{
+                   first_name
+                   language
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+    expect(body.data.userRegister.user.language).toBe("null");
+  });
+
+  it("#1.93 => No campo language inserir uma String com grande massa de caracteres", async () => {
+    const { firstName, lastName, userName, email } = createFakerUser();
+    const language =
+      "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
+    const query = `
+       mutation registrandoUser{
+           userRegister(
+               first_name: "${firstName}"
+               last_name: "${lastName}"
+               user_name: "${userName}"
+               email: "${email}"
+               password: "password"
+               avatar: "avatar"
+               birth_date: "01/01/1999"
+               genre: "masculino"
+               language:"${language}"
+           ){
+               user{
+                   first_name
+                   language
+               }
+           }
+       }
+   `;
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+
+    /* expect(body.errors[0].message).toBe("Bad Request Exception"); */
+  });
 });
+//
