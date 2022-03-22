@@ -5,17 +5,25 @@ const requestForApiGraphQL = async (uri, query) => {
     "Content-Type": "application/json",
   };
 
-  const response = await requestPromise.post({
-    uri,
-    body: {
-      query,
-    },
-    headers,
-    json: true,
-    resolveWithFullResponse: true,
-  });
-console.log(response.body)
-  return response;
+  try {
+    const response = await requestPromise.post({
+      uri,
+      body: {
+        query,
+      },
+      headers,
+      json: true,
+      resolveWithFullResponse: true,
+    });
+
+    return response;
+  } catch (e) {
+    const { error } = e;
+
+    // console.log(error.errors[0].message);
+
+    throw new Error(error.errors[0].message);
+  }
 };
 
 module.exports = { requestForApiGraphQL };
