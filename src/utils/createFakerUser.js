@@ -11,12 +11,15 @@ const createFakerUser = () => {
 
   const password = faker.internet.password();
 
+  const suffix = faker.name.suffix();
+
   return {
     firstName,
     lastName,
     userName,
     email,
     password,
+    suffix,
   };
 };
 
