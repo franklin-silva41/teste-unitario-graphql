@@ -886,9 +886,10 @@ describe("Cadastro de usuario", () => {
       await requestForApiGraphQL(baseUrl, query);
     }).rejects.toEqual(new Error('Syntax Error: Unexpected "@".'));
   });
+
   it("#1.48 => userType com o valor boolean(true)", async () => {
     const { name, lastName, userName, email } = createFakerUser();
-    expect(async () => {
+    await expect(async () => {
       const userType = true;
       const query = `
           mutation registrandoUser{
@@ -910,12 +911,13 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toThrow('"String cannot represent a non string value: true"');
+    }).rejects.toBeInstanceOf(Error);
   });
+
   it("#1.49 => userType com o valor boolean(false)", async () => {
-    const { name, lastName, userName, email } = createFakerUser();
-    expect(async () => {
-      const userType = false;
+    await expect(async () => {
+      const { name, lastName, userName, email } = createFakerUser();
+
       const query = `
           mutation registrandoUser{
               userRegister(
@@ -924,7 +926,7 @@ describe("Cadastro de usuario", () => {
                   user_name: "${userName}"
                   email: "${email}"
                   password: "password"
-                  user_type: ${userType}
+                  user_type: false
                   avatar: "testegenre"
                   birth_date: "2000-01-01"
                   genre: null
@@ -936,7 +938,7 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toThrow('"String cannot represent a non string value: false"');
+    }).rejects.toEqual(new Error("String cannot represent a non string value: false"))  ;
   });
 
   it("#1.50 => userType com o valor null", async () => {
@@ -972,6 +974,7 @@ describe("Cadastro de usuario", () => {
 
     const userType =
       "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretiumEtiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium";
+
     const query = `
           mutation registrandoUser{
               userRegister(
@@ -1021,6 +1024,7 @@ describe("Cadastro de usuario", () => {
     const { body } = response;
     expect(body.data.userRegister).toHaveProperty("user");
   });
+
   it("#1.53 => avatar com uma String vazia", async () => {
     const { firstName, lastName, userName, email } = createFakerUser();
 
@@ -1048,7 +1052,7 @@ describe("Cadastro de usuario", () => {
   });
 
   it("#1.54 => avatar com Numero", async () => {
-    expect(async () => {
+    await expect(async () => {
       const { firstName, lastName, userName, email } = createFakerUser();
       const avatar = 123456;
       const query = `
@@ -1074,7 +1078,7 @@ describe("Cadastro de usuario", () => {
   });
 
   it("#1.55 => avatar com caracter especial", async () => {
-    expect(async () => {
+    await expect(async () => {
       const { firstName, lastName, userName, email } = createFakerUser();
       const avatar = "@@@@@";
       const query = `
@@ -1096,10 +1100,11 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toThrow('"Syntax Error: Unexpected \\"@\\"."');
+    }).rejects.toEqual(new Error('Syntax Error: Unexpected "@".'));
   });
+
   it("#1.56 => avatar com Bolean(true)", async () => {
-    expect(async () => {
+    await expect(async () => {
       const { firstName, lastName, userName, email } = createFakerUser();
       const avatar = true;
       const query = `
@@ -1121,11 +1126,11 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toThrow('"String cannot represent a non string value: true"');
+    }).rejects.toEqual(new Error("String cannot represent a non string value: true"));
   });
 
   it("#1.56 => avatar com Bolean(False)", async () => {
-    expect(async () => {
+    await expect(async () => {
       const { firstName, lastName, userName, email } = createFakerUser();
       const avatar = false;
       const query = `
@@ -1147,7 +1152,7 @@ describe("Cadastro de usuario", () => {
           }
       `;
       await requestForApiGraphQL(baseUrl, query);
-    }).rejects.toThrow('"String cannot represent a non string value: false"');
+    }).rejects.toEqual(new Error('String cannot represent a non string value: false'));
   });
 
   it("#1.57 => avatar com valor Null", async () => {
