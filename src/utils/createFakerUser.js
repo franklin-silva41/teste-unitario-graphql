@@ -13,6 +13,8 @@ const createFakerUser = () => {
 
   const suffix = faker.name.suffix();
 
+  const companySuffix = faker.company.companySuffix();
+
   return {
     firstName,
     lastName,
@@ -20,6 +22,7 @@ const createFakerUser = () => {
     email,
     password,
     suffix,
+    companySuffix,
   };
 };
 

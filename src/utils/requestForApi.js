@@ -20,7 +20,7 @@ const requestForApiGraphQL = async (uri, query) => {
   } catch (e) {
     const { error } = e;
 
-    // console.log(error.errors[0].message);
+    console.log(error.errors[0].message);
 
     throw new Error(error.errors[0].message);
   }

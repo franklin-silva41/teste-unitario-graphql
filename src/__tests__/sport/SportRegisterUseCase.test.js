@@ -50,41 +50,19 @@ describe("Registro de Esporte Casos de sucesso!", () => {
 
     expect(error.message).toBe("Bad Request Exception");
   }); */
-  /* it("# 3.3 => Insiro uma serie de caratcteres especiais no campo name", async () => {
-    const { suffix } = createFakerUser();
-
-    const query = `
-        mutation fieldTestName{
-            sportRegister(
-            name: "@@@@@@"
-            slug: "${suffix}"
-            ){
-                name
-            }
-        }
-    `;
-
-    const response = await requestForApiGraphQL(baseUrl, query);
-
-    const { body } = response;
-
-    expect(body.data).toHaveProperty("sportRegister");
-    expect(body.data.sportRegister.name).toBe("@@@@@@");
-  }); */
-
-  test.each([
+  /* test.each([
     {
       campo: "name",
-      name: "@@@@",
+      name: "@@@@@@@",
       suffix: createFakerUser().suffix,
     },
     {
-      campo: "suffix",
+      campo: "slug",
       name: "Basquete",
-      suffix: "@@@@",
+      suffix: `${createFakerUser().suffix}@@@@@@@`,
     },
   ])(
-    "Testes com valores com caracteres especiais",
+    "Testes com campo $campo com valor de caracteres especiais",
     async ({ campo, name, suffix }) => {
       const query = `
         mutation fieldTestName{
@@ -92,7 +70,7 @@ describe("Registro de Esporte Casos de sucesso!", () => {
             name: "${name}"
             slug: "${suffix}"
             ){
-                ${campo}
+              ${campo}
             }
         }
     `;
@@ -101,13 +79,9 @@ describe("Registro de Esporte Casos de sucesso!", () => {
 
       const { body } = response;
 
-      console.log(body);
-
-      /* expect(body.data).toHaveProperty("sportRegister");
-      expect(body.data.sportRegister[campo]).toBe("@@@@@@"); */
+      expect(body.data).toHaveProperty("sportRegister");
     }
-  );
-
+  ); */
   /* test.each([["123456"], ["true"], ["false"], ["null"]])(
     "Espero que o campo name não sejam cadastrados com valor %s ",
     async (valor) => {
@@ -148,4 +122,100 @@ describe("Registro de Esporte Casos de sucesso!", () => {
       }).rejects.toThrowError();
     }
   ); */
+  /* it("#3.15 => Insiro um valor existente no campo slug", async () => {
+    const { suffix } = createFakerUser();
+
+    const query = `
+      mutation fieldTestSlug{
+          sportRegister(
+              name: "testeSlug8"
+              slug: "${suffix}"
+          ){
+            slug
+          }
+      }
+    `;
+
+    await requestForApiGraphQL(baseUrl, query);
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("errors");
+    expect(body.errors[0].message).toBe("SLUGALREADYEXISTS");
+  }); */
+  /* it("# 3.17 => insiro um valor string no campo image_url", async () => {
+    const { companySuffix } = createFakerUser();
+
+    const query = `
+      mutation fieldTestImageUrl{
+          sportRegister(
+            name: "testeImageUrl1"
+            slug: "${companySuffix}",
+            image_url: "https://testeimagem.com/imagem.png"
+          ){
+            image_url
+          }
+      }
+    `;
+
+    const response = await requestForApiGraphQL(baseUrl, query);
+
+    const { body } = response;
+
+    expect(body).toHaveProperty("data");
+    expect(body.data).toEqual(
+      expect.objectContaining({
+        sportRegister: {
+          image_url: "https://testeimagem.com/imagem.png",
+        },
+      })
+    );
+  }); */
+
+  test.each([["123456"], [true], [false], [null]])(
+    "Espero que o campo image_url não sejam cadastrados com valor %s ",
+    async (valor) => {
+      await expect(async () => {
+        const { companySuffix } = createFakerUser();
+
+        const query = `
+            mutation fieldTestName{
+                sportRegister(
+                    name: "Basquete"
+                    slug: "${companySuffix}",
+                    image_url: ${valor}
+                ){
+                  image_url
+                }
+            }
+        `;
+
+        await requestForApiGraphQL(baseUrl, query);
+      }).rejects.toThrowError();
+    }
+  );
+
+  /* it("# 3.19 insiro um valor númerico no campo image_url => ", async () => {
+    await expect(async () => {
+      const { companySuffix } = createFakerUser();
+
+      const query = `
+        mutation fieldTestImageUrl{
+            sportRegister(
+              name: "testeImageUrl1"
+              slug: "${companySuffix}",
+              image_url: 123456
+            ){
+              image_url
+            }
+        }
+      `;
+
+      await requestForApiGraphQL(baseUrl, query);
+    }).rejects.toEqual(
+      new Error("String cannot represent a non string value: 123456")
+    );
+  }); */
 });
