@@ -15,12 +15,10 @@ const requestForApiGraphQL = async (uri, query) => {
       json: true,
       resolveWithFullResponse: true,
     });
-    
+
     return response;
   } catch (e) {
     const { error } = e;
-
-    console.log(error.errors[0].message);
 
     throw new Error(error.errors[0].message);
   }
