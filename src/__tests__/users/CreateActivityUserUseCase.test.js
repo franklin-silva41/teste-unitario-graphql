@@ -5,7 +5,6 @@ const {
   createQueryNewActivity,
   createQueryListActivity,
   createQueryUpdateActivity,
-  createQueryDeleteActivity,
 } = require("./mocks/querys");
 
 const headers = {
