@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@faker-js/faker": "^6.0.0",
+    "gql-query-builder": "^3.6.0",
     "jest": "^27.5.1",
     "request-promise": "^4.2.6"
   },
