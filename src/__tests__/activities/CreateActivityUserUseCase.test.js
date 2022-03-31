@@ -1,12 +1,12 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
-const { convertToTimestamp } = require("../../utils/convertToTimestamp");
-const { createQueryLoginUser } = require("../users/mocks/querys");
+const { createQueryLoginUser } = require("../users/functions/querys");
+
+const { activityOne, activityTwo } = require("../../params");
 
 const {
   createQueryNewActivity,
-  createQueryUpdateActivity,
   createQueryActivityById,
-} = require("./mocks/querys");
+} = require("./functions/querys");
 
 const headers = {
   "Content-Type": "application/json",
@@ -35,22 +35,21 @@ describe("Create Activities", () => {
   });
 
   it("Create a new activities", async () => {
-    /* Criação de Atividade */
     const data = {
-      title: "Esporte é d+",
+      title: activityOne.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: 1,
-      privacy: "Public",
+      skill_levels: activityOne.skill_levels,
+      privacy: activityOne.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: convertToTimestamp("2022-04-30 12:30:00"),
-      begins_at: convertToTimestamp("2022-05-30 10:30:00"),
-      sport_id: 1,
-      author_id: 18,
+      date: activityOne.date,
+      begins_at: activityOne.begins_at,
+      sport_id: activityOne.sport_id,
+      author_id: activityOne.author_id,
     };
 
     const queryCreateActivity = createQueryNewActivity(data);
@@ -64,20 +63,20 @@ describe("Create Activities", () => {
     const activity = responseActivity.body.data.activityRegister;
 
     const newData = {
-      title: "Corrida",
+      title: activityTwo.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Venha Correr com a gente",
-      skill_levels: 1,
-      privacy: "Public",
+      skill_levels: activityTwo.skill_levels,
+      privacy: activityTwo.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: convertToTimestamp("2022-04-30 12:30:00"),
-      begins_at: convertToTimestamp("2022-05-30 10:30:00"),
-      sport_id: 1,
-      author_id: 18,
+      date: activityTwo.date,
+      begins_at: activityTwo.begins_at,
+      sport_id: activityTwo.sport_id,
+      author_id: activityTwo.author_id,
     };
 
     const queryCreateNewActivity = createQueryNewActivity(newData);
@@ -90,7 +89,6 @@ describe("Create Activities", () => {
 
     const newActivity = responseNewActivity.body.data.activityRegister;
 
-    /* Listagem da Atividade */
     const queryListActivity = createQueryActivityById(newActivity.id);
 
     const responseListActivity = await newRequestForApiGraphQL(
@@ -110,7 +108,7 @@ describe("Create Activities", () => {
     expect(responseListActivity.body.data.findActivities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: "Corrida",
+          title: activityTwo.title,
         }),
       ])
     );
@@ -118,7 +116,7 @@ describe("Create Activities", () => {
     expect(responseListNewActivity.body.data.findActivities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: "Esporte é d+",
+          title: activityOne.title,
         }),
       ])
     );

@@ -1,12 +1,14 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
-const { createQueryLoginUser } = require("../users/mocks/querys");
+const { postOne, postTwo } = require("../../params");
+
+const { createQueryLoginUser } = require("../users/functions/querys");
 
 const {
   createQueryCreatePost,
   createQueryUpdatePost,
   createQueryFindAllPosts,
-} = require("./mocks/querys");
+} = require("./functions/querys");
 
 const headers = {
   "Content-Type": "application/json",
@@ -35,10 +37,8 @@ describe("Create Post", () => {
   });
 
   it("Create a new post and update post", async () => {
-    /* Criando Post */
-
     const data = {
-      title: "Teste Postagem",
+      title: postOne.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -51,9 +51,9 @@ describe("Create Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: false,
-      sport_id: 1,
-      author_id: 23,
+      sponsored: postOne.sponsored,
+      sport_id: postOne.sport_id,
+      author_id: postOne.author_id,
     };
 
     const queryCreatePost = createQueryCreatePost(data);
@@ -67,7 +67,7 @@ describe("Create Post", () => {
     const firstPost = responseCreateFirstPost.body.data.postRegister;
 
     const newData = {
-      title: "Teste Postagem 2",
+      title: postTwo.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -80,9 +80,9 @@ describe("Create Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: false,
-      sport_id: 1,
-      author_id: 23,
+      sponsored: postTwo.sponsored,
+      sport_id: postTwo.sport_id,
+      author_id: postTwo.author_id,
     };
 
     const createQueryCreateSecondPost = createQueryCreatePost(newData);
@@ -126,7 +126,7 @@ describe("Create Post", () => {
     expect(allPosts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: secundPost.title,
+          title: postTwo.title,
         }),
       ])
     );

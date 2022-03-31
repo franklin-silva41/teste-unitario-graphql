@@ -1,11 +1,14 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
-const { createQueryLoginUser } = require("../users/mocks/querys");
+
+const { postOne } = require("../../params");
+
+const { createQueryLoginUser } = require("../users/functions/querys");
 
 const {
   createQueryFindPostByAuthorId,
   createQueryCreatePost,
   createQueryFindPostByTitle,
-} = require("./mocks/querys");
+} = require("./functions/querys");
 
 const headers = {
   "Content-Type": "application/json",
@@ -33,9 +36,9 @@ describe("Search Post", () => {
     };
   });
 
-  it("Find my posts", async () => {
+  it(`Find my posts author_id: ${postOne.author_id}`, async () => {
     const data = {
-      title: "Teste Encontrando Postagem",
+      title: postOne.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -48,16 +51,16 @@ describe("Search Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: false,
-      sport_id: 1,
-      author_id: 23,
+      sponsored: postOne.sponsored,
+      sport_id: postOne.sport_id,
+      author_id: postOne.author_id,
     };
 
     const queryCreatePost = createQueryCreatePost(data);
 
     await newRequestForApiGraphQL(baseURL, queryCreatePost, headersLoged);
 
-    const queryFindMyPosts = createQueryFindPostByAuthorId(18);
+    const queryFindMyPosts = createQueryFindPostByAuthorId(postOne.author_id);
 
     const responseFindMyPosts = await newRequestForApiGraphQL(
       baseURL,
@@ -71,16 +74,18 @@ describe("Search Post", () => {
       expect.arrayContaining([
         expect.objectContaining({
           author: {
-            id: "18",
-            last_name: "Verri",
+            id: `${postOne.author_id}`,
+            last_name: postOne.author.last_name,
           },
         }),
       ])
     );
   });
 
-  it("Search a find post by title", async () => {
-    const queryFindByPostTitle = createQueryFindPostByTitle("Subida!");
+  it(`Search a find post by title: ${postOne.searchTitle}`, async () => {
+    const queryFindByPostTitle = createQueryFindPostByTitle(
+      postOne.searchTitle
+    );
 
     const responseFindPostByTitle = await newRequestForApiGraphQL(
       baseURL,
@@ -93,7 +98,7 @@ describe("Search Post", () => {
     expect(post).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: "Subida!",
+          title: `${postOne.searchTitle}`,
         }),
       ])
     );

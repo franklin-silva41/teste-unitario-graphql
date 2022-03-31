@@ -1,14 +1,16 @@
 const { convertToTimestamp } = require("../../utils/convertToTimestamp");
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
-const { createQueryLoginUser } = require("../users/mocks/querys");
+const { activityOne, activityTwo } = require("../../params");
+
+const { createQueryLoginUser } = require("../users/functions/querys");
 const {
   createQueryActivityById,
   createQueryActivitiesBySport,
   createQuerySearchActivitiesBySkill,
   createQuerySearchActivitiesByPrivacy,
   createQueryNewActivity,
-} = require("./mocks/querys");
+} = require("./functions/querys");
 
 const headers = {
   "Content-Type": "application/json",
@@ -36,9 +38,10 @@ describe("Search Activities", () => {
     };
   });
 
-  it("Listo todas as atividades por um esporte especifico (Running)", async () => {
-    // Pesquisando Atividade especifico (Corrida => Running)
-    const querySearchActivities = createQueryActivitiesBySport(1);
+  it(`Listo todas as atividades por um esporte especifico (${activityOne.sport.name})`, async () => {
+    const querySearchActivities = createQueryActivitiesBySport(
+      activityOne.sport_id
+    );
 
     const responseActivities = await newRequestForApiGraphQL(
       baseURL,
@@ -54,17 +57,18 @@ describe("Search Activities", () => {
       expect.arrayContaining([
         expect.objectContaining({
           sport: {
-            id: "1",
-            name: "Running",
+            id: `${activityOne.sport_id}`,
+            name: activityOne.sport.name,
           },
         }),
       ])
     );
   });
 
-  it("Listo todas as atividades por um nivel de dificuldade especifico (Intermediate)", async () => {
-    // Pesquisando Atividade com nivel de dificuldade especifica (Intermediate)
-    const querySearchActivities = createQuerySearchActivitiesBySkill(2);
+  it(`Listo todas as atividades por um nivel de dificuldade especifico (${activityOne.skill_level.name})`, async () => {
+    const querySearchActivities = createQuerySearchActivitiesBySkill(
+      activityOne.skill_levels
+    );
 
     const responseActivities = await newRequestForApiGraphQL(
       baseURL,
@@ -79,16 +83,21 @@ describe("Search Activities", () => {
     expect(activities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          skill_levels: [{ id: "2", name: "Intermediate" }],
+          skill_levels: [
+            {
+              id: `${activityOne.skill_levels}`,
+              name: activityOne.skill_level.name,
+            },
+          ],
         }),
       ])
     );
   });
 
-  it("Listo todas as atividades por uma privacidade especifica (Publica)", async () => {
-    // Pesquisando Atividade por uma privacidade especifica (Publica)
-    const querySearchActivitiesByPrivacy =
-      createQuerySearchActivitiesByPrivacy("Public");
+  it(`Listo todas as atividades por uma privacidade especifica (${activityOne.privacy})`, async () => {
+    const querySearchActivitiesByPrivacy = createQuerySearchActivitiesByPrivacy(
+      activityOne.privacy
+    );
 
     const responseActivities = await newRequestForApiGraphQL(
       baseURL,
@@ -103,7 +112,7 @@ describe("Search Activities", () => {
     expect(activities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          privacy: "Public",
+          privacy: `${activityOne.privacy}`,
         }),
       ])
     );
@@ -111,22 +120,21 @@ describe("Search Activities", () => {
 
   it("Prourando uma atividade em especifico ", async () => {
     const data = {
-      title: "Esporte é d+",
+      title: activityOne.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: 1,
-      privacy: "Public",
+      skill_levels: activityOne.skill_levels,
+      privacy: activityOne.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: convertToTimestamp("2022-04-30 12:30:00"),
-      begins_at: convertToTimestamp("2022-05-30 10:30:00"),
-      sport_id: 1,
-      author_id: 18,
+      date: activityOne.date,
+      begins_at: activityOne.begins_at,
+      sport_id: activityOne.sport_id,
+      author_id: activityOne.author_id,
     };
-
     const queryCreateActivity = createQueryNewActivity(data);
 
     const responseActivity = await newRequestForApiGraphQL(
@@ -137,7 +145,6 @@ describe("Search Activities", () => {
 
     const createdActivity = responseActivity.body.data.activityRegister;
 
-    // Pesquisando Atividade com nivel de dificuldade especifica (Intermediate)
     const querySearchActivityById = createQueryActivityById(createdActivity.id);
 
     const responseActivities = await newRequestForApiGraphQL(

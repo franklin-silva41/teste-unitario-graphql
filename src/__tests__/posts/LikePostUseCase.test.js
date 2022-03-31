@@ -1,9 +1,12 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
-const { createQueryLoginUser } = require("../users/mocks/querys");
+
+const { postOne } = require("../../params");
+
+const { createQueryLoginUser } = require("../users/functions/querys");
 const {
   createQueryCreatePost,
   createQueryLikePost,
-} = require("./mocks/querys");
+} = require("./functions/querys");
 
 const headers = {
   "Content-Type": "application/json",
@@ -33,7 +36,7 @@ describe("Like Post", () => {
 
   it("Like a post", async () => {
     const data = {
-      title: "Teste Encontrando Postagem",
+      title: postOne.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -46,9 +49,9 @@ describe("Like Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: false,
-      sport_id: 1,
-      author_id: 23,
+      sponsored: postOne.sponsored,
+      sport_id: postOne.sport_id,
+      author_id: postOne.author_id,
     };
 
     const queryCreatePost = createQueryCreatePost(data);
@@ -61,7 +64,11 @@ describe("Like Post", () => {
 
     const post = responseCreatePost.body.data.postRegister;
 
-    const queryLikePost = createQueryLikePost(post.id, 23, true);
+    const queryLikePost = createQueryLikePost(
+      post.id,
+      postOne.author_id,
+      postOne.sponsored
+    );
 
     const responseLikePost = await newRequestForApiGraphQL(
       baseURL,
