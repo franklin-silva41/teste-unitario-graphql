@@ -155,6 +155,20 @@ const createQueryFindPostByTitle = (title) => {
   return query;
 };
 
+const createQueryLikePost = (post_id, user_id, like) => {
+  const query = `
+        mutation fieldTestPostId {
+            setLikePost(
+                post_id: ${post_id}
+                user_id: ${user_id}
+                like: ${like}
+            )
+        }
+    `;
+
+  return query;
+};
+
 module.exports = {
   createQueryCreatePost,
   createQueryUpdatePost,
@@ -162,4 +176,5 @@ module.exports = {
   createQueryFindAllPosts,
   createQueryFindPostByAuthorId,
   createQueryFindPostByTitle,
+  createQueryLikePost,
 };
