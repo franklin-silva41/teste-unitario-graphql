@@ -1,10 +1,11 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 const { convertToTimestamp } = require("../../utils/convertToTimestamp");
+const { createQueryLoginUser } = require("../users/mocks/querys");
+
 const {
-  createQueryLoginUser,
   createQueryNewActivity,
-  createQueryListActivity,
   createQueryUpdateActivity,
+  createQueryActivityById,
 } = require("./mocks/querys");
 
 const headers = {
@@ -33,7 +34,7 @@ describe("Create Activities", () => {
     };
   });
 
-  it("Create a new activity and delete activity", async () => {
+  it("Create a new activities", async () => {
     /* Criação de Atividade */
     const data = {
       title: "Esporte é d+",
@@ -46,8 +47,8 @@ describe("Create Activities", () => {
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: convertToTimestamp("2022-03-30 12:30:00"),
-      begins_at: convertToTimestamp("2022-04-05 10:30:00"),
+      date: convertToTimestamp("2022-04-30 12:30:00"),
+      begins_at: convertToTimestamp("2022-05-30 10:30:00"),
       sport_id: 1,
       author_id: 18,
     };
@@ -73,8 +74,8 @@ describe("Create Activities", () => {
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: convertToTimestamp("2022-03-30 12:30:00"),
-      begins_at: convertToTimestamp("2022-04-20 07:30:00"),
+      date: convertToTimestamp("2022-04-30 12:30:00"),
+      begins_at: convertToTimestamp("2022-05-30 10:30:00"),
       sport_id: 1,
       author_id: 18,
     };
@@ -89,18 +90,8 @@ describe("Create Activities", () => {
 
     const newActivity = responseNewActivity.body.data.activityRegister;
 
-    const activityDataUpdate = {
-      ...newData,
-      id: newActivity.id,
-      title: "Basquete na Praça",
-    };
-
-    const queryActivityUpdated = createQueryUpdateActivity(activityDataUpdate);
-
-    await newRequestForApiGraphQL(baseURL, queryActivityUpdated, headersLoged);
-
     /* Listagem da Atividade */
-    const queryListActivity = createQueryListActivity(newActivity.id);
+    const queryListActivity = createQueryActivityById(newActivity.id);
 
     const responseListActivity = await newRequestForApiGraphQL(
       baseURL,
@@ -108,7 +99,7 @@ describe("Create Activities", () => {
       headersLoged
     );
 
-    const queryListNewActivity = createQueryListActivity(activity.id);
+    const queryListNewActivity = createQueryActivityById(activity.id);
 
     const responseListNewActivity = await newRequestForApiGraphQL(
       baseURL,
@@ -119,7 +110,7 @@ describe("Create Activities", () => {
     expect(responseListActivity.body.data.findActivities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: "Basquete na Praça",
+          title: "Corrida",
         }),
       ])
     );
