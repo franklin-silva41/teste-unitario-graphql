@@ -207,6 +207,21 @@ const createQueryActivityById = (id_activity) => {
   return createQuery;
 };
 
+const createQueryListMembersAcitivity = (id_activity) => {
+  const query = `
+    query {
+      listActivityMembers(id_activity: ${id_activity}){
+        id
+        first_name
+        last_name
+        user_name
+      }
+    } 
+  `;
+
+  return query;
+};
+
 module.exports = {
   createQueryNewActivity,
   createQueryUpdateActivity,
@@ -214,4 +229,5 @@ module.exports = {
   createQuerySearchActivitiesBySkill,
   createQuerySearchActivitiesByPrivacy,
   createQueryActivityById,
+  createQueryListMembersAcitivity,
 };

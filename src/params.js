@@ -14,6 +14,11 @@ const activityOne = {
   skill_level: {
     name: "Intermediate",
   },
+  user: {
+    first_name: "Eduardo",
+    last_name: "Verri",
+    user_name: "eduardoverri",
+  },
 };
 
 const activityTwo = {
@@ -30,6 +35,11 @@ const activityTwo = {
   skill_level: {
     name: "Intermediate",
   },
+  user: {
+    first_name: "Eduardo",
+    last_name: "Verri",
+    user_name: "eduardoverri",
+  },
 };
 
 const postOne = {
@@ -41,6 +51,7 @@ const postOne = {
   author: {
     last_name: "Andrade",
   },
+  comment: "Teste de Comentario",
 };
 
 const postTwo = {
@@ -52,6 +63,7 @@ const postTwo = {
   author: {
     last_name: "Andrade",
   },
+  comment: "Teste de Comentario",
 };
 
 module.exports = { activityOne, activityTwo, postOne, postTwo };

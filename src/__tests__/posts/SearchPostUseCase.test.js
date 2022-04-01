@@ -8,6 +8,7 @@ const {
   createQueryFindPostByAuthorId,
   createQueryCreatePost,
   createQueryFindPostByTitle,
+  createQueryRemovePost,
 } = require("./functions/querys");
 
 const headers = {
@@ -17,6 +18,7 @@ const headers = {
 const baseURL = "https://api-stg.sportidia.com/graphql";
 let token;
 let headersLoged;
+let postDeleteId;
 
 describe("Search Post", () => {
   beforeAll(async () => {
@@ -34,6 +36,11 @@ describe("Search Post", () => {
       ...headers,
       authorization: `Bearer ${token}`,
     };
+  });
+
+  afterAll(async () => {
+    const queryRemovePost = createQueryRemovePost(postDeleteId);
+    await newRequestForApiGraphQL(baseURL, queryRemovePost, headersLoged);
   });
 
   it(`Find my posts author_id: ${postOne.author_id}`, async () => {
@@ -58,7 +65,15 @@ describe("Search Post", () => {
 
     const queryCreatePost = createQueryCreatePost(data);
 
-    await newRequestForApiGraphQL(baseURL, queryCreatePost, headersLoged);
+    const responseCreatePost = await newRequestForApiGraphQL(
+      baseURL,
+      queryCreatePost,
+      headersLoged
+    );
+
+    const post = responseCreatePost.body.data.postRegister;
+
+    postDeleteId = post.id;
 
     const queryFindMyPosts = createQueryFindPostByAuthorId(postOne.author_id);
 

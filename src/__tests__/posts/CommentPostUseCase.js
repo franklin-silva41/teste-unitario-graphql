@@ -5,8 +5,7 @@ const { postOne } = require("../../params");
 const { createQueryLoginUser } = require("../users/functions/querys");
 const {
   createQueryCreatePost,
-  createQueryLikePost,
-  createQueryRemovePost,
+  createQueryCommentPost,
 } = require("./functions/querys");
 
 const headers = {
@@ -16,9 +15,8 @@ const headers = {
 const baseURL = "https://api-stg.sportidia.com/graphql";
 let token;
 let headersLoged;
-let postDeleteId;
 
-describe("Like Post", () => {
+describe("Comment Post", () => {
   beforeAll(async () => {
     const query = createQueryLoginUser({
       email: "eduardo.verri@sptech.school",
@@ -36,12 +34,7 @@ describe("Like Post", () => {
     };
   });
 
-  afterAll(async () => {
-    const queryRemovePost = createQueryRemovePost(postDeleteId);
-    await newRequestForApiGraphQL(baseURL, queryRemovePost, headersLoged);
-  });
-
-  it("Like a post", async () => {
+  it("User comment a post", async () => {
     const data = {
       title: postOne.title,
       image_url:
@@ -71,21 +64,17 @@ describe("Like Post", () => {
 
     const post = responseCreatePost.body.data.postRegister;
 
-    postDeleteId = post.id;
+    const queryCommentPost = createQueryCommentPost(post.id, postOne.comment);
 
-    const queryLikePost = createQueryLikePost(
-      post.id,
-      postOne.author_id,
-      postOne.sponsored
-    );
-
-    const responseLikePost = await newRequestForApiGraphQL(
+    const responseComment = await newRequestForApiGraphQL(
       baseURL,
-      queryLikePost,
+      queryCommentPost,
       headersLoged
     );
 
-    expect(responseLikePost.body.data).toHaveProperty("setLikePost");
-    expect(responseLikePost.body.data.setLikePost).toBe(true);
+    const comment = responseComment.body.data;
+
+    expect(comment).toHaveProperty("createCommentPost");
+    expect(comment.createCommentPost).toBe(true);
   });
 });

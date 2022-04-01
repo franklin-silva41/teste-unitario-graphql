@@ -169,6 +169,32 @@ const createQueryLikePost = (post_id, user_id, like) => {
   return query;
 };
 
+const createQueryCommentPost = (post_id, comment) => {
+  const query = `
+        mutation commentPost {
+            createCommentPost(
+                post_id: ${post_id}, 
+                comment: "${comment}"
+            )
+        }
+    `;
+
+  return query;
+};
+
+const createQueryRemovePost = (post_id) => {
+  const query = `
+        mutation postDelete {
+            removePost(id: ${post_id}) {
+                id
+            title
+            }
+        }
+    `;
+
+  return query;
+};
+
 module.exports = {
   createQueryCreatePost,
   createQueryUpdatePost,
@@ -177,4 +203,6 @@ module.exports = {
   createQueryFindPostByAuthorId,
   createQueryFindPostByTitle,
   createQueryLikePost,
+  createQueryCommentPost,
+  createQueryRemovePost,
 };

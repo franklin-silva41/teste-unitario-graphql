@@ -10,6 +10,7 @@ const {
   createQuerySearchActivitiesBySkill,
   createQuerySearchActivitiesByPrivacy,
   createQueryNewActivity,
+  createQueryListMembersAcitivity,
 } = require("./functions/querys");
 
 const headers = {
@@ -161,6 +162,67 @@ describe("Search Activities", () => {
       expect.arrayContaining([
         expect.objectContaining({
           id: `${createdActivity.id}`,
+        }),
+      ])
+    );
+  });
+  it("Pesquisando uma atividade e listando todos os membros dessa atividade", async () => {
+    const data = {
+      title: activityOne.title,
+      image_url:
+        "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
+      description: "Vamos nos exercitar",
+      skill_levels: activityOne.skill_levels,
+      privacy: activityOne.privacy,
+      location_city: "São Paulo",
+      location_state: "São Paulo",
+      location_lat: -23.5668698,
+      location_long: -46.6608874,
+      date: activityOne.date,
+      begins_at: activityOne.begins_at,
+      sport_id: activityOne.sport_id,
+      author_id: activityOne.author_id,
+    };
+
+    const queryCreateActivity = createQueryNewActivity(data);
+
+    const responseActivity = await newRequestForApiGraphQL(
+      baseURL,
+      queryCreateActivity,
+      headersLoged
+    );
+
+    const createdActivity = responseActivity.body.data.activityRegister;
+
+    const querySearchActivityById = createQueryActivityById(createdActivity.id);
+
+    const responseActivities = await newRequestForApiGraphQL(
+      baseURL,
+      querySearchActivityById,
+      headersLoged
+    );
+
+    const activity = responseActivities.body.data.findActivities;
+
+    const queryListMembersActivity = createQueryListMembersAcitivity(
+      activity[0].id
+    );
+
+    const responseMembersActivity = await newRequestForApiGraphQL(
+      baseURL,
+      queryListMembersActivity,
+      headersLoged
+    );
+
+    const members = responseMembersActivity.body.data;
+
+    expect(members).toHaveProperty("listActivityMembers");
+    expect(members.listActivityMembers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          first_name: `${activityOne.user.first_name}`,
+          last_name: `${activityOne.user.last_name}`,
+          user_name: `${activityOne.user.user_name}`,
         }),
       ])
     );

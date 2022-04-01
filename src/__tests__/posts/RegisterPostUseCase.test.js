@@ -8,6 +8,7 @@ const {
   createQueryCreatePost,
   createQueryUpdatePost,
   createQueryFindAllPosts,
+  createQueryRemovePost,
 } = require("./functions/querys");
 
 const headers = {
@@ -17,6 +18,7 @@ const headers = {
 const baseURL = "https://api-stg.sportidia.com/graphql";
 let token;
 let headersLoged;
+let postsDeleteIds = [];
 
 describe("Create Post", () => {
   beforeAll(async () => {
@@ -34,6 +36,13 @@ describe("Create Post", () => {
       ...headers,
       authorization: `Bearer ${token}`,
     };
+  });
+
+  afterAll(() => {
+    postsDeleteIds.map(async (post) => {
+      const queryDeletePost = createQueryRemovePost(post.id);
+      await newRequestForApiGraphQL(baseURL, queryDeletePost, headersLoged);
+    });
   });
 
   it("Create a new post and update post", async () => {
@@ -100,6 +109,9 @@ describe("Create Post", () => {
       id: firstPost.id,
       title: "Atualizando a postagem Teste",
     };
+
+    postsDeleteIds.push(dataFirstPostUpdated);
+    postsDeleteIds.push(secundPost);
 
     const queryPostUpdate = createQueryUpdatePost(dataFirstPostUpdated);
 
