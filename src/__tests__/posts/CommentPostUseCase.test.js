@@ -6,6 +6,7 @@ const { createQueryLoginUser } = require("../users/functions/querys");
 const {
   createQueryCreatePost,
   createQueryCommentPost,
+  createQueryRemovePost,
 } = require("./functions/querys");
 
 const headers = {
@@ -15,6 +16,7 @@ const headers = {
 const baseURL = "https://api-stg.sportidia.com/graphql";
 let token;
 let headersLoged;
+let postDeleteId;
 
 describe("Comment Post", () => {
   beforeAll(async () => {
@@ -32,6 +34,11 @@ describe("Comment Post", () => {
       ...headers,
       authorization: `Bearer ${token}`,
     };
+  });
+
+  afterAll(async () => {
+    const queryRemovePost = createQueryRemovePost(postDeleteId);
+    await newRequestForApiGraphQL(baseURL, queryRemovePost, headersLoged);
   });
 
   it("User comment a post", async () => {
@@ -63,6 +70,8 @@ describe("Comment Post", () => {
     );
 
     const post = responseCreatePost.body.data.postRegister;
+
+    postDeleteId = post.id;
 
     const queryCommentPost = createQueryCommentPost(post.id, postOne.comment);
 
