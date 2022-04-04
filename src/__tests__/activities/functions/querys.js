@@ -222,6 +222,20 @@ const createQueryListMembersAcitivity = (id_activity) => {
   return query;
 };
 
+const createQueryDeleteActivity = (id_activity) => {
+  const query = `
+    mutation{
+      toggleActiveActivity(
+        id: ${id_activity}
+      ){
+        title
+      }
+    }
+  `;
+
+  return query;
+};
+
 module.exports = {
   createQueryNewActivity,
   createQueryUpdateActivity,
@@ -230,4 +244,5 @@ module.exports = {
   createQuerySearchActivitiesByPrivacy,
   createQueryActivityById,
   createQueryListMembersAcitivity,
+  createQueryDeleteActivity,
 };

@@ -2,38 +2,21 @@ const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
 const { postOne } = require("../../params");
 
-const { createQueryLoginUser } = require("../users/functions/querys");
 const {
   createQueryCreatePost,
   createQueryCommentPost,
   createQueryRemovePost,
 } = require("./functions/querys");
 
-const headers = {
-  "Content-Type": "application/json",
-};
+const { loginUser } = require("./functions/loginUser");
 
 const baseURL = "https://api-stg.sportidia.com/graphql";
-let token;
 let headersLoged;
 let postDeleteId;
 
 describe("Comment Post", () => {
   beforeAll(async () => {
-    const query = createQueryLoginUser({
-      email: "eduardo.verri@sptech.school",
-      password: "teste123",
-    });
-
-    const response = await newRequestForApiGraphQL(baseURL, query);
-
-    const { body } = response;
-    token = body.data.login.token;
-
-    headersLoged = {
-      ...headers,
-      authorization: `Bearer ${token}`,
-    };
+    headersLoged = await loginUser("eduardo.verri@sptech.school", "teste123");
   });
 
   afterAll(async () => {
@@ -41,7 +24,7 @@ describe("Comment Post", () => {
     await newRequestForApiGraphQL(baseURL, queryRemovePost, headersLoged);
   });
 
-  it("User comment a post", async () => {
+  it("User comment other post", async () => {
     const data = {
       title: postOne.title,
       image_url:
@@ -73,12 +56,17 @@ describe("Comment Post", () => {
 
     postDeleteId = post.id;
 
+    const headersOtherUser = await loginUser(
+      "igor.silva@bandtec.com.br",
+      "teste123"
+    );
+
     const queryCommentPost = createQueryCommentPost(post.id, postOne.comment);
 
     const responseComment = await newRequestForApiGraphQL(
       baseURL,
       queryCommentPost,
-      headersLoged
+      headersOtherUser
     );
 
     const comment = responseComment.body.data;

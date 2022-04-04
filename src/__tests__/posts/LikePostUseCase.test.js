@@ -2,38 +2,20 @@ const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
 const { postOne } = require("../../params");
 
-const { createQueryLoginUser } = require("../users/functions/querys");
 const {
   createQueryCreatePost,
   createQueryLikePost,
   createQueryRemovePost,
 } = require("./functions/querys");
-
-const headers = {
-  "Content-Type": "application/json",
-};
+const { loginUser } = require("./functions/loginUser");
 
 const baseURL = "https://api-stg.sportidia.com/graphql";
-let token;
 let headersLoged;
 let postDeleteId;
 
 describe("Like Post", () => {
   beforeAll(async () => {
-    const query = createQueryLoginUser({
-      email: "eduardo.verri@sptech.school",
-      password: "teste123",
-    });
-
-    const response = await newRequestForApiGraphQL(baseURL, query);
-
-    const { body } = response;
-    token = body.data.login.token;
-
-    headersLoged = {
-      ...headers,
-      authorization: `Bearer ${token}`,
-    };
+    headersLoged = await loginUser("eduardo.verri@sptech.school", "teste123");
   });
 
   afterAll(async () => {
@@ -73,6 +55,11 @@ describe("Like Post", () => {
 
     postDeleteId = post.id;
 
+    const headersOtherUser = await loginUser(
+      "igor.silva@bandtec.com.br",
+      "teste123"
+    );
+
     const queryLikePost = createQueryLikePost(
       post.id,
       postOne.author_id,
@@ -82,7 +69,7 @@ describe("Like Post", () => {
     const responseLikePost = await newRequestForApiGraphQL(
       baseURL,
       queryLikePost,
-      headersLoged
+      headersOtherUser
     );
 
     expect(responseLikePost.body.data).toHaveProperty("setLikePost");

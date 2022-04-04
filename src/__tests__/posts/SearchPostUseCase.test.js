@@ -18,7 +18,7 @@ const headers = {
 const baseURL = "https://api-stg.sportidia.com/graphql";
 let token;
 let headersLoged;
-let postDeleteId;
+let postsDeleteIds = [];
 
 describe("Search Post", () => {
   beforeAll(async () => {
@@ -38,9 +38,11 @@ describe("Search Post", () => {
     };
   });
 
-  afterAll(async () => {
-    const queryRemovePost = createQueryRemovePost(postDeleteId);
-    await newRequestForApiGraphQL(baseURL, queryRemovePost, headersLoged);
+  afterAll(() => {
+    postsDeleteIds.map(async (post) => {
+      const queryRemovePost = createQueryRemovePost(post);
+      await newRequestForApiGraphQL(baseURL, queryRemovePost, headersLoged);
+    });
   });
 
   it(`Find my posts author_id: ${postOne.author_id}`, async () => {
@@ -73,7 +75,7 @@ describe("Search Post", () => {
 
     const post = responseCreatePost.body.data.postRegister;
 
-    postDeleteId = post.id;
+    postsDeleteIds.push(post.id);
 
     const queryFindMyPosts = createQueryFindPostByAuthorId(postOne.author_id);
 
@@ -98,6 +100,37 @@ describe("Search Post", () => {
   });
 
   it(`Search a find post by title: ${postOne.searchTitle}`, async () => {
+    const data = {
+      title: postOne.title,
+      image_url:
+        "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
+      description: "teste postagem",
+      location_street: "Rua Haddock Lobo",
+      location_complement: "12º Andar - Digital Solutions",
+      location_neighborhood: "Paulista",
+      location_city: "São Paulo",
+      location_state: "São Paulo",
+      location_country: "Brazil",
+      location_lat: -23.5580209,
+      location_long: -46.6616788,
+      location_raw: "Rua Haddock Lobo, 595",
+      sponsored: postOne.sponsored,
+      sport_id: postOne.sport_id,
+      author_id: postOne.author_id,
+    };
+
+    const queryCreatePost = createQueryCreatePost(data);
+
+    const responseCreatePost = await newRequestForApiGraphQL(
+      baseURL,
+      queryCreatePost,
+      headersLoged
+    );
+
+    const createdPost = responseCreatePost.body.data.postRegister;
+
+    postsDeleteIds.push(createdPost.id);
+
     const queryFindByPostTitle = createQueryFindPostByTitle(
       postOne.searchTitle
     );

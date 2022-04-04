@@ -40,7 +40,7 @@ describe("Create Post", () => {
 
   afterAll(() => {
     postsDeleteIds.map(async (post) => {
-      const queryDeletePost = createQueryRemovePost(post.id);
+      const queryDeletePost = createQueryRemovePost(post);
       await newRequestForApiGraphQL(baseURL, queryDeletePost, headersLoged);
     });
   });
@@ -110,8 +110,8 @@ describe("Create Post", () => {
       title: "Atualizando a postagem Teste",
     };
 
-    postsDeleteIds.push(dataFirstPostUpdated);
-    postsDeleteIds.push(secundPost);
+    postsDeleteIds.push(dataFirstPostUpdated.id);
+    postsDeleteIds.push(secundPost.id);
 
     const queryPostUpdate = createQueryUpdatePost(dataFirstPostUpdated);
 

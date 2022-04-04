@@ -11,6 +11,7 @@ const {
   createQuerySearchActivitiesByPrivacy,
   createQueryNewActivity,
   createQueryListMembersAcitivity,
+  createQueryDeleteActivity,
 } = require("./functions/querys");
 
 const headers = {
@@ -20,6 +21,7 @@ const headers = {
 const baseURL = "https://api-stg.sportidia.com/graphql";
 let token;
 let headersLoged;
+let activitiesIds = [];
 
 describe("Search Activities", () => {
   beforeAll(async () => {
@@ -39,7 +41,43 @@ describe("Search Activities", () => {
     };
   });
 
+  afterAll(() => {
+    activitiesIds.map(async (activity) => {
+      const query = createQueryDeleteActivity(activity);
+
+      await newRequestForApiGraphQL(baseURL, query, headersLoged);
+    });
+  });
+
   it(`Listo todas as atividades por um esporte especifico (${activityOne.sport.name})`, async () => {
+    const data = {
+      title: activityOne.title,
+      image_url:
+        "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
+      description: "Vamos nos exercitar",
+      skill_levels: activityOne.skill_levels,
+      privacy: activityOne.privacy,
+      location_city: "São Paulo",
+      location_state: "São Paulo",
+      location_lat: -23.5668698,
+      location_long: -46.6608874,
+      date: activityOne.date,
+      begins_at: activityOne.begins_at,
+      sport_id: activityOne.sport_id,
+      author_id: activityOne.author_id,
+    };
+    const queryCreateActivity = createQueryNewActivity(data);
+
+    const responseCreatedActivity = await newRequestForApiGraphQL(
+      baseURL,
+      queryCreateActivity,
+      headersLoged
+    );
+
+    const createdActivity = responseCreatedActivity.body.data.activityRegister;
+
+    activitiesIds.push(createdActivity.id);
+
     const querySearchActivities = createQueryActivitiesBySport(
       activityOne.sport_id
     );
@@ -67,6 +105,34 @@ describe("Search Activities", () => {
   });
 
   it(`Listo todas as atividades por um nivel de dificuldade especifico (${activityOne.skill_level.name})`, async () => {
+    const data = {
+      title: activityOne.title,
+      image_url:
+        "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
+      description: "Vamos nos exercitar",
+      skill_levels: activityOne.skill_levels,
+      privacy: activityOne.privacy,
+      location_city: "São Paulo",
+      location_state: "São Paulo",
+      location_lat: -23.5668698,
+      location_long: -46.6608874,
+      date: activityOne.date,
+      begins_at: activityOne.begins_at,
+      sport_id: activityOne.sport_id,
+      author_id: activityOne.author_id,
+    };
+    const queryCreateActivity = createQueryNewActivity(data);
+
+    const responseCreatedActivity = await newRequestForApiGraphQL(
+      baseURL,
+      queryCreateActivity,
+      headersLoged
+    );
+
+    const createdActivity = responseCreatedActivity.body.data.activityRegister;
+
+    activitiesIds.push(createdActivity.id);
+
     const querySearchActivities = createQuerySearchActivitiesBySkill(
       activityOne.skill_levels
     );
@@ -96,6 +162,34 @@ describe("Search Activities", () => {
   });
 
   it(`Listo todas as atividades por uma privacidade especifica (${activityOne.privacy})`, async () => {
+    const data = {
+      title: activityOne.title,
+      image_url:
+        "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
+      description: "Vamos nos exercitar",
+      skill_levels: activityOne.skill_levels,
+      privacy: activityOne.privacy,
+      location_city: "São Paulo",
+      location_state: "São Paulo",
+      location_lat: -23.5668698,
+      location_long: -46.6608874,
+      date: activityOne.date,
+      begins_at: activityOne.begins_at,
+      sport_id: activityOne.sport_id,
+      author_id: activityOne.author_id,
+    };
+    const queryCreateActivity = createQueryNewActivity(data);
+
+    const responseCreatedActivity = await newRequestForApiGraphQL(
+      baseURL,
+      queryCreateActivity,
+      headersLoged
+    );
+
+    const createdActivity = responseCreatedActivity.body.data.activityRegister;
+
+    activitiesIds.push(createdActivity.id);
+
     const querySearchActivitiesByPrivacy = createQuerySearchActivitiesByPrivacy(
       activityOne.privacy
     );
@@ -146,6 +240,8 @@ describe("Search Activities", () => {
 
     const createdActivity = responseActivity.body.data.activityRegister;
 
+    activitiesIds.push(createdActivity.id);
+
     const querySearchActivityById = createQueryActivityById(createdActivity.id);
 
     const responseActivities = await newRequestForApiGraphQL(
@@ -166,6 +262,7 @@ describe("Search Activities", () => {
       ])
     );
   });
+
   it("Pesquisando uma atividade e listando todos os membros dessa atividade", async () => {
     const data = {
       title: activityOne.title,
@@ -193,6 +290,8 @@ describe("Search Activities", () => {
     );
 
     const createdActivity = responseActivity.body.data.activityRegister;
+
+    activitiesIds.push(createdActivity.id);
 
     const querySearchActivityById = createQueryActivityById(createdActivity.id);
 

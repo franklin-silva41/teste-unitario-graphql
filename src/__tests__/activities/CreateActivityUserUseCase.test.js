@@ -6,6 +6,7 @@ const { activityOne, activityTwo } = require("../../params");
 const {
   createQueryNewActivity,
   createQueryActivityById,
+  createQueryDeleteActivity,
 } = require("./functions/querys");
 
 const headers = {
@@ -15,6 +16,7 @@ const headers = {
 const baseURL = "https://api-stg.sportidia.com/graphql";
 let token;
 let headersLoged;
+let activitiesIds = [];
 
 describe("Create Activities", () => {
   beforeAll(async () => {
@@ -32,6 +34,13 @@ describe("Create Activities", () => {
       ...headers,
       authorization: `Bearer ${token}`,
     };
+  });
+
+  afterAll(() => {
+    activitiesIds.map(async (activity) => {
+      const queryRemoveActivity = createQueryDeleteActivity(activity);
+      await newRequestForApiGraphQL(baseURL, queryRemoveActivity, headersLoged);
+    });
   });
 
   it("Create a new activities", async () => {
@@ -88,6 +97,9 @@ describe("Create Activities", () => {
     );
 
     const newActivity = responseNewActivity.body.data.activityRegister;
+
+    activitiesIds.push(activity.id);
+    activitiesIds.push(newActivity.id);
 
     const queryListActivity = createQueryActivityById(newActivity.id);
 
