@@ -1,0 +1,25 @@
+{
+  "firstPost": {
+    "title": "Teste Postagem",
+    "sponsored": false,
+    "sport_id": 1,
+    "author_id": 23,
+    "author": {
+      "last_name": "Andrade"
+    },
+    "comment": "Teste de Comentario"
+  },
+  "secundPost": {
+    "title": "Teste Postagem 2",
+    "sponsored": false,
+    "sport_id": 1,
+    "author_id": 23,
+    "author": {
+      "last_name": "Andrade"
+    },
+    "comment": "Teste de Comentario"
+  },
+  "updatedFirstPost": {
+    "title": "Atualizando a postagem Teste"
+  }
+}

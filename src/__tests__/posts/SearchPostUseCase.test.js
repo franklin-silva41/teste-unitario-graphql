@@ -1,6 +1,9 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
-const { postOne } = require("../../params");
+const {
+  firstPost,
+  searchTitle,
+} = require("./scenarios/CreateAndSearchPost.json");
 
 const { createQueryLoginUser } = require("../users/functions/querys");
 
@@ -45,9 +48,9 @@ describe("Search Post", () => {
     });
   });
 
-  it(`Find my posts author_id: ${postOne.author_id}`, async () => {
+  it(`Find my posts author_id: ${firstPost.author_id}`, async () => {
     const data = {
-      title: postOne.title,
+      title: firstPost.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -60,9 +63,9 @@ describe("Search Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: postOne.sponsored,
-      sport_id: postOne.sport_id,
-      author_id: postOne.author_id,
+      sponsored: firstPost.sponsored,
+      sport_id: firstPost.sport_id,
+      author_id: firstPost.author_id,
     };
 
     const queryCreatePost = createQueryCreatePost(data);
@@ -77,7 +80,7 @@ describe("Search Post", () => {
 
     postsDeleteIds.push(post.id);
 
-    const queryFindMyPosts = createQueryFindPostByAuthorId(postOne.author_id);
+    const queryFindMyPosts = createQueryFindPostByAuthorId(firstPost.author_id);
 
     const responseFindMyPosts = await newRequestForApiGraphQL(
       baseURL,
@@ -91,17 +94,17 @@ describe("Search Post", () => {
       expect.arrayContaining([
         expect.objectContaining({
           author: {
-            id: `${postOne.author_id}`,
-            last_name: postOne.author.last_name,
+            id: `${firstPost.author_id}`,
+            last_name: firstPost.author.last_name,
           },
         }),
       ])
     );
   });
 
-  it(`Search a find post by title: ${postOne.searchTitle}`, async () => {
+  it(`Search a find post by title: ${searchTitle}`, async () => {
     const data = {
-      title: postOne.title,
+      title: firstPost.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -114,9 +117,9 @@ describe("Search Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: postOne.sponsored,
-      sport_id: postOne.sport_id,
-      author_id: postOne.author_id,
+      sponsored: firstPost.sponsored,
+      sport_id: firstPost.sport_id,
+      author_id: firstPost.author_id,
     };
 
     const queryCreatePost = createQueryCreatePost(data);
@@ -131,9 +134,7 @@ describe("Search Post", () => {
 
     postsDeleteIds.push(createdPost.id);
 
-    const queryFindByPostTitle = createQueryFindPostByTitle(
-      postOne.searchTitle
-    );
+    const queryFindByPostTitle = createQueryFindPostByTitle(searchTitle);
 
     const responseFindPostByTitle = await newRequestForApiGraphQL(
       baseURL,
@@ -146,7 +147,7 @@ describe("Search Post", () => {
     expect(post).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: `${postOne.searchTitle}`,
+          title: `${searchTitle}`,
         }),
       ])
     );

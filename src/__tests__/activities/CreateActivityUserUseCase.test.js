@@ -1,7 +1,11 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 const { createQueryLoginUser } = require("../users/functions/querys");
+const { convertToTimestamp } = require("../../utils/convertToTimestamp");
 
-const { activityOne, activityTwo } = require("../../params");
+const {
+  fistActivity,
+  secundActivity,
+} = require("./scenarios/CreateActivity.json");
 
 const {
   createQueryNewActivity,
@@ -45,20 +49,20 @@ describe("Create Activities", () => {
 
   it("Create a new activities", async () => {
     const data = {
-      title: activityOne.title,
+      title: fistActivity.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: activityOne.skill_levels,
-      privacy: activityOne.privacy,
+      skill_levels: fistActivity.skill_levels_id,
+      privacy: fistActivity.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: activityOne.date,
-      begins_at: activityOne.begins_at,
-      sport_id: activityOne.sport_id,
-      author_id: activityOne.author_id,
+      date: convertToTimestamp(fistActivity.date),
+      begins_at: convertToTimestamp(fistActivity.begins_at),
+      sport_id: fistActivity.sport_id,
+      author_id: fistActivity.author_id,
     };
 
     const queryCreateActivity = createQueryNewActivity(data);
@@ -72,20 +76,20 @@ describe("Create Activities", () => {
     const activity = responseActivity.body.data.activityRegister;
 
     const newData = {
-      title: activityTwo.title,
+      title: secundActivity.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Venha Correr com a gente",
-      skill_levels: activityTwo.skill_levels,
-      privacy: activityTwo.privacy,
+      skill_levels: secundActivity.skill_levels_id,
+      privacy: secundActivity.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: activityTwo.date,
-      begins_at: activityTwo.begins_at,
-      sport_id: activityTwo.sport_id,
-      author_id: activityTwo.author_id,
+      date: convertToTimestamp(secundActivity.date),
+      begins_at: convertToTimestamp(secundActivity.begins_at),
+      sport_id: secundActivity.sport_id,
+      author_id: secundActivity.author_id,
     };
 
     const queryCreateNewActivity = createQueryNewActivity(newData);
@@ -120,7 +124,7 @@ describe("Create Activities", () => {
     expect(responseListActivity.body.data.findActivities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: activityTwo.title,
+          title: secundActivity.title,
         }),
       ])
     );
@@ -128,7 +132,7 @@ describe("Create Activities", () => {
     expect(responseListNewActivity.body.data.findActivities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: activityOne.title,
+          title: fistActivity.title,
         }),
       ])
     );

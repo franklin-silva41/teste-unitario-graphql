@@ -1,0 +1,39 @@
+{
+  "fistActivity": {
+    "title": "Esporte é d+",
+    "skill_levels_id": 2,
+    "privacy": "Public",
+    "date": "2022-04-30 12:30:00",
+    "begins_at": "2022-05-30 10:30:00",
+    "sport_id": 1,
+    "author_id": 18,
+    "sport": {
+      "name": "Running"
+    },
+    "skill_level": {
+      "name": "Intermediate"
+    },
+    "user": {
+      "first_name": "Eduardo",
+      "last_name": "Verri",
+      "user_name": "eduardoverri"
+    }
+  },
+  "secundActivity": {
+    "title": "Corrida",
+    "skill_levels_id": 1,
+    "privacy": "Public",
+    "date": "2022-04-30 12:30:00",
+    "begins_at": "2022-05-30 10:30:00",
+    "sport_id": 1,
+    "author_id": 18,
+    "skill_level": {
+      "name": "Intermediate"
+    },
+    "user": {
+      "first_name": "Eduardo",
+      "last_name": "Verri",
+      "user_name": "eduardoverri"
+    }
+  }
+}

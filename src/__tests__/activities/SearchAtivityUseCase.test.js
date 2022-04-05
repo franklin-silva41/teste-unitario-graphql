@@ -1,7 +1,7 @@
 const { convertToTimestamp } = require("../../utils/convertToTimestamp");
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
-const { activityOne, activityTwo } = require("../../params");
+const { fistActivity } = require("./scenarios/CreateAndSearchActivity.json");
 
 const { createQueryLoginUser } = require("../users/functions/querys");
 const {
@@ -49,22 +49,22 @@ describe("Search Activities", () => {
     });
   });
 
-  it(`Listo todas as atividades por um esporte especifico (${activityOne.sport.name})`, async () => {
+  it(`Listo todas as atividades por um esporte especifico (${fistActivity.sport.name})`, async () => {
     const data = {
-      title: activityOne.title,
+      title: fistActivity.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: activityOne.skill_levels,
-      privacy: activityOne.privacy,
+      skill_levels: fistActivity.skill_levels_id,
+      privacy: fistActivity.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: activityOne.date,
-      begins_at: activityOne.begins_at,
-      sport_id: activityOne.sport_id,
-      author_id: activityOne.author_id,
+      date: convertToTimestamp(fistActivity.date),
+      begins_at: convertToTimestamp(fistActivity.begins_at),
+      sport_id: fistActivity.sport_id,
+      author_id: fistActivity.author_id,
     };
     const queryCreateActivity = createQueryNewActivity(data);
 
@@ -79,7 +79,7 @@ describe("Search Activities", () => {
     activitiesIds.push(createdActivity.id);
 
     const querySearchActivities = createQueryActivitiesBySport(
-      activityOne.sport_id
+      fistActivity.sport_id
     );
 
     const responseActivities = await newRequestForApiGraphQL(
@@ -96,30 +96,30 @@ describe("Search Activities", () => {
       expect.arrayContaining([
         expect.objectContaining({
           sport: {
-            id: `${activityOne.sport_id}`,
-            name: activityOne.sport.name,
+            id: `${fistActivity.sport_id}`,
+            name: fistActivity.sport.name,
           },
         }),
       ])
     );
   });
 
-  it(`Listo todas as atividades por um nivel de dificuldade especifico (${activityOne.skill_level.name})`, async () => {
+  it(`Listo todas as atividades por um nivel de dificuldade especifico (${fistActivity.skill_level.name})`, async () => {
     const data = {
-      title: activityOne.title,
+      title: fistActivity.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: activityOne.skill_levels,
-      privacy: activityOne.privacy,
+      skill_levels: fistActivity.skill_levels_id,
+      privacy: fistActivity.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: activityOne.date,
-      begins_at: activityOne.begins_at,
-      sport_id: activityOne.sport_id,
-      author_id: activityOne.author_id,
+      date: convertToTimestamp(fistActivity.date),
+      begins_at: convertToTimestamp(fistActivity.begins_at),
+      sport_id: fistActivity.sport_id,
+      author_id: fistActivity.author_id,
     };
     const queryCreateActivity = createQueryNewActivity(data);
 
@@ -134,7 +134,7 @@ describe("Search Activities", () => {
     activitiesIds.push(createdActivity.id);
 
     const querySearchActivities = createQuerySearchActivitiesBySkill(
-      activityOne.skill_levels
+      fistActivity.skill_levels_id
     );
 
     const responseActivities = await newRequestForApiGraphQL(
@@ -152,8 +152,8 @@ describe("Search Activities", () => {
         expect.objectContaining({
           skill_levels: [
             {
-              id: `${activityOne.skill_levels}`,
-              name: activityOne.skill_level.name,
+              id: `${fistActivity.skill_levels_id}`,
+              name: fistActivity.skill_level.name,
             },
           ],
         }),
@@ -161,22 +161,22 @@ describe("Search Activities", () => {
     );
   });
 
-  it(`Listo todas as atividades por uma privacidade especifica (${activityOne.privacy})`, async () => {
+  it(`Listo todas as atividades por uma privacidade especifica (${fistActivity.privacy})`, async () => {
     const data = {
-      title: activityOne.title,
+      title: fistActivity.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: activityOne.skill_levels,
-      privacy: activityOne.privacy,
+      skill_levels: fistActivity.skill_levels_id,
+      privacy: fistActivity.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: activityOne.date,
-      begins_at: activityOne.begins_at,
-      sport_id: activityOne.sport_id,
-      author_id: activityOne.author_id,
+      date: convertToTimestamp(fistActivity.date),
+      begins_at: convertToTimestamp(fistActivity.begins_at),
+      sport_id: fistActivity.sport_id,
+      author_id: fistActivity.author_id,
     };
     const queryCreateActivity = createQueryNewActivity(data);
 
@@ -191,7 +191,7 @@ describe("Search Activities", () => {
     activitiesIds.push(createdActivity.id);
 
     const querySearchActivitiesByPrivacy = createQuerySearchActivitiesByPrivacy(
-      activityOne.privacy
+      fistActivity.privacy
     );
 
     const responseActivities = await newRequestForApiGraphQL(
@@ -207,7 +207,7 @@ describe("Search Activities", () => {
     expect(activities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          privacy: `${activityOne.privacy}`,
+          privacy: `${fistActivity.privacy}`,
         }),
       ])
     );
@@ -215,20 +215,20 @@ describe("Search Activities", () => {
 
   it("Prourando uma atividade em especifico ", async () => {
     const data = {
-      title: activityOne.title,
+      title: fistActivity.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: activityOne.skill_levels,
-      privacy: activityOne.privacy,
+      skill_levels: fistActivity.skill_levels_id,
+      privacy: fistActivity.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: activityOne.date,
-      begins_at: activityOne.begins_at,
-      sport_id: activityOne.sport_id,
-      author_id: activityOne.author_id,
+      date: convertToTimestamp(fistActivity.date),
+      begins_at: convertToTimestamp(fistActivity.begins_at),
+      sport_id: fistActivity.sport_id,
+      author_id: fistActivity.author_id,
     };
     const queryCreateActivity = createQueryNewActivity(data);
 
@@ -265,20 +265,20 @@ describe("Search Activities", () => {
 
   it("Pesquisando uma atividade e listando todos os membros dessa atividade", async () => {
     const data = {
-      title: activityOne.title,
+      title: fistActivity.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "Vamos nos exercitar",
-      skill_levels: activityOne.skill_levels,
-      privacy: activityOne.privacy,
+      skill_levels: fistActivity.skill_levels_id,
+      privacy: fistActivity.privacy,
       location_city: "São Paulo",
       location_state: "São Paulo",
       location_lat: -23.5668698,
       location_long: -46.6608874,
-      date: activityOne.date,
-      begins_at: activityOne.begins_at,
-      sport_id: activityOne.sport_id,
-      author_id: activityOne.author_id,
+      date: convertToTimestamp(fistActivity.date),
+      begins_at: convertToTimestamp(fistActivity.begins_at),
+      sport_id: fistActivity.sport_id,
+      author_id: fistActivity.author_id,
     };
 
     const queryCreateActivity = createQueryNewActivity(data);
@@ -319,9 +319,9 @@ describe("Search Activities", () => {
     expect(members.listActivityMembers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          first_name: `${activityOne.user.first_name}`,
-          last_name: `${activityOne.user.last_name}`,
-          user_name: `${activityOne.user.user_name}`,
+          first_name: `${fistActivity.user.first_name}`,
+          last_name: `${fistActivity.user.last_name}`,
+          user_name: `${fistActivity.user.user_name}`,
         }),
       ])
     );

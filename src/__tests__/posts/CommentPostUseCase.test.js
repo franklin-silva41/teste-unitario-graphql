@@ -1,6 +1,9 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
-const { postOne } = require("../../params");
+const {
+  firstPost,
+  commentFirstPost,
+} = require("./scenarios/CreateAndCommentPost.json");
 
 const {
   createQueryCreatePost,
@@ -26,7 +29,7 @@ describe("Comment Post", () => {
 
   it("User comment other post", async () => {
     const data = {
-      title: postOne.title,
+      title: firstPost.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -39,9 +42,9 @@ describe("Comment Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: postOne.sponsored,
-      sport_id: postOne.sport_id,
-      author_id: postOne.author_id,
+      sponsored: firstPost.sponsored,
+      sport_id: firstPost.sport_id,
+      author_id: firstPost.author_id,
     };
 
     const queryCreatePost = createQueryCreatePost(data);
@@ -61,7 +64,7 @@ describe("Comment Post", () => {
       "teste123"
     );
 
-    const queryCommentPost = createQueryCommentPost(post.id, postOne.comment);
+    const queryCommentPost = createQueryCommentPost(post.id, commentFirstPost);
 
     const responseComment = await newRequestForApiGraphQL(
       baseURL,

@@ -1,6 +1,10 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 
-const { postOne, postTwo } = require("../../params");
+const {
+  firstPost,
+  secundPost,
+  updatedFirstPost,
+} = require("./scenarios/CreateAndUpdatePosts.json");
 
 const { createQueryLoginUser } = require("../users/functions/querys");
 
@@ -47,7 +51,7 @@ describe("Create Post", () => {
 
   it("Create a new post and update post", async () => {
     const data = {
-      title: postOne.title,
+      title: firstPost.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -60,9 +64,9 @@ describe("Create Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: postOne.sponsored,
-      sport_id: postOne.sport_id,
-      author_id: postOne.author_id,
+      sponsored: firstPost.sponsored,
+      sport_id: firstPost.sport_id,
+      author_id: firstPost.author_id,
     };
 
     const queryCreatePost = createQueryCreatePost(data);
@@ -73,10 +77,10 @@ describe("Create Post", () => {
       headersLoged
     );
 
-    const firstPost = responseCreateFirstPost.body.data.postRegister;
+    const postOne = responseCreateFirstPost.body.data.postRegister;
 
     const newData = {
-      title: postTwo.title,
+      title: secundPost.title,
       image_url:
         "https://res.cloudinary.com/sportidia/image/upload/v1648148819/ohj0en4augmsndrggskt.jpg",
       description: "teste postagem",
@@ -89,9 +93,9 @@ describe("Create Post", () => {
       location_lat: -23.5580209,
       location_long: -46.6616788,
       location_raw: "Rua Haddock Lobo, 595",
-      sponsored: postTwo.sponsored,
-      sport_id: postTwo.sport_id,
-      author_id: postTwo.author_id,
+      sponsored: secundPost.sponsored,
+      sport_id: secundPost.sport_id,
+      author_id: secundPost.author_id,
     };
 
     const createQueryCreateSecondPost = createQueryCreatePost(newData);
@@ -102,16 +106,16 @@ describe("Create Post", () => {
       headersLoged
     );
 
-    const secundPost = responseCreateSecondPost.body.data.postRegister;
+    const postTwo = responseCreateSecondPost.body.data.postRegister;
 
     const dataFirstPostUpdated = {
-      ...firstPost,
-      id: firstPost.id,
-      title: "Atualizando a postagem Teste",
+      ...postOne,
+      id: postOne.id,
+      title: updatedFirstPost.title,
     };
 
     postsDeleteIds.push(dataFirstPostUpdated.id);
-    postsDeleteIds.push(secundPost.id);
+    postsDeleteIds.push(postTwo.id);
 
     const queryPostUpdate = createQueryUpdatePost(dataFirstPostUpdated);
 
@@ -130,7 +134,7 @@ describe("Create Post", () => {
     expect(allPosts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: "Atualizando a postagem Teste",
+          title: updatedFirstPost.title,
         }),
       ])
     );
@@ -138,7 +142,7 @@ describe("Create Post", () => {
     expect(allPosts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: postTwo.title,
+          title: secundPost.title,
         }),
       ])
     );
