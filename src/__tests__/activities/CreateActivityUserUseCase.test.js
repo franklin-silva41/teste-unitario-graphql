@@ -1,6 +1,7 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
 const { createQueryLoginUser } = require("../users/functions/querys");
 const { convertToTimestamp } = require("../../utils/convertToTimestamp");
+const { logger } = require("../../utils/logger");
 
 const {
   fistActivity,
@@ -120,6 +121,23 @@ describe("Create Activities", () => {
       queryListNewActivity,
       headersLoged
     );
+
+    logger.info({
+      Teste:
+        "Criando duas atividades e verificando se estão sendo listadas corretamente!",
+      PrimeiraAtividade: {
+        TituloPostagem: fistActivity.title,
+        AutorID: fistActivity.author_id,
+        Recebido: fistActivity.title,
+        Esperado: fistActivity.title,
+      },
+      SegundaAtividade: {
+        TituloPostagem: secundActivity.title,
+        AutorID: secundActivity.author_id,
+        Recebido: secundActivity.title,
+        Esperado: secundActivity.title,
+      },
+    });
 
     expect(responseListActivity.body.data.findActivities).toEqual(
       expect.arrayContaining([

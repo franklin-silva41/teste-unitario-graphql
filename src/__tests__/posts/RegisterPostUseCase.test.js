@@ -1,4 +1,5 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
+const { logger } = require("../../utils/logger");
 
 const {
   firstPost,
@@ -130,6 +131,18 @@ describe("Create Post", () => {
     );
 
     const allPosts = responseAllPosts.body.data.findPosts.data;
+
+    logger.info({
+      Teste: "Criando dois postagem e atualizando uma delas!",
+      PrimeiraPostagem: {
+        Recebido: dataFirstPostUpdated.title,
+        Esperado: updatedFirstPost.title,
+      },
+      SegundaPostagem: {
+        Recebido: secundPost.title,
+        Esperado: secundPost.title,
+      },
+    });
 
     expect(allPosts).toEqual(
       expect.arrayContaining([

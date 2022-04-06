@@ -1,4 +1,5 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
+const { logger } = require("../../utils/logger");
 
 const { firstPost } = require("./scenarios/CreateAndLikePost.json");
 
@@ -71,6 +72,18 @@ describe("Like Post", () => {
       queryLikePost,
       headersOtherUser
     );
+
+    logger.info({
+      Teste:
+        "Criando postagem e um outro usuario dando like na postagem criada!",
+      PostagemCriada: {
+        TituloPostagem: firstPost.title,
+        Autor: firstPost.author.last_name,
+        UsuarioADarLike: "Igor Silva",
+        Recebido: { setLikePost: responseLikePost.body.data.setLikePost },
+        Esperado: { setLikePost: true },
+      },
+    });
 
     expect(responseLikePost.body.data).toHaveProperty("setLikePost");
     expect(responseLikePost.body.data.setLikePost).toBe(true);

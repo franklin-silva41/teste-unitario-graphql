@@ -1,5 +1,6 @@
 const { convertToTimestamp } = require("../../utils/convertToTimestamp");
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
+const { logger } = require("../../utils/logger");
 
 const { fistActivity } = require("./scenarios/CreateAndSearchActivity.json");
 
@@ -92,6 +93,20 @@ describe("Search Activities", () => {
 
     const activities = body.data.findActivities;
 
+    logger.info({
+      Teste: "Listando atividades de um esporte especifico",
+      Atividade: {
+        Recebidos: {
+          SportID: fistActivity.sport_id,
+          SportName: fistActivity.sport.name,
+        },
+        Esperados: {
+          SportID: fistActivity.sport_id,
+          SportName: fistActivity.sport.name,
+        },
+      },
+    });
+
     expect(activities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -146,6 +161,21 @@ describe("Search Activities", () => {
     const { body } = responseActivities;
 
     const activities = body.data.findActivities;
+
+    logger.info({
+      Teste:
+        "Listando todas as atividades por um nivel de dificuldade especifico!",
+      Atividade: {
+        Recebidos: {
+          SkillLevelID: fistActivity.skill_levels_id,
+          SkillLevelName: fistActivity.skill_level.name,
+        },
+        Esperados: {
+          SkillLevelID: fistActivity.skill_levels_id,
+          SkillLevelName: fistActivity.skill_level.name,
+        },
+      },
+    });
 
     expect(activities).toEqual(
       expect.arrayContaining([
@@ -204,6 +234,14 @@ describe("Search Activities", () => {
 
     const activities = body.data.findActivities;
 
+    logger.info({
+      Teste: "Listo todas as atividades por uma privacidade especifica!",
+      Atividade: {
+        Recebidos: { PrivacyName: fistActivity.privacy },
+        Esperados: { PrivacyName: fistActivity.privacy },
+      },
+    });
+
     expect(activities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -253,6 +291,14 @@ describe("Search Activities", () => {
     const { body } = responseActivities;
 
     const activity = body.data.findActivities;
+
+    logger.info({
+      Teste: "Criando e Procurando essa atividade em especifico!",
+      Atividade: {
+        Recebidos: { ActivityID: createdActivity.id },
+        Esperados: { PrivacyName: createdActivity.id },
+      },
+    });
 
     expect(activity).toEqual(
       expect.arrayContaining([

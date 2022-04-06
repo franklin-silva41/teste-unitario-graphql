@@ -1,4 +1,5 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
+const { logger } = require("../../utils/logger");
 
 const {
   firstPost,
@@ -88,6 +89,23 @@ describe("Search Post", () => {
       headersLoged
     );
 
+    logger.info({
+      Teste: "Procurando a postagem criado pelo usuario",
+      PostagemProcurada: {
+        TituloPostagem: firstPost.title,
+        Autor: firstPost.author.last_name,
+        AutorID: firstPost.author_id,
+        Recebidos: {
+          AutorID: firstPost.author_id,
+          LastName: firstPost.author.last_name,
+        },
+        Esperados: {
+          AutorID: firstPost.author_id,
+          LastName: firstPost.author.last_name,
+        },
+      },
+    });
+
     const myPosts = responseFindMyPosts.body.data.findPosts.data;
 
     expect(myPosts).toEqual(
@@ -143,6 +161,17 @@ describe("Search Post", () => {
     );
 
     const post = responseFindPostByTitle.body.data.findPosts.data;
+
+    logger.info({
+      Teste: "Procurando uma postagem com titulo especifico",
+      PostagemProcurada: {
+        IDPostagem: createdPost.id,
+        TituloPostagem: firstPost.title,
+        AutorID: firstPost.author_id,
+        Recebidos: searchTitle,
+        Esperado: post[0].title,
+      },
+    });
 
     expect(post).toEqual(
       expect.arrayContaining([

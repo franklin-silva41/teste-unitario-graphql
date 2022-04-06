@@ -1,4 +1,5 @@
 const { newRequestForApiGraphQL } = require("../../utils/newRequestForApi");
+const { logger } = require("../../utils/logger");
 
 const {
   firstPost,
@@ -73,6 +74,17 @@ describe("Comment Post", () => {
     );
 
     const comment = responseComment.body.data;
+
+    logger.info({
+      Teste: "Criando postagem e um outro usuario comentando nessa postagem!",
+      Postagem: {
+        TituloPostagem: firstPost.title,
+        Autor: firstPost.author.last_name,
+        UsuarioADarLike: "Igor Silva",
+        Recebido: { createCommentPost: comment.createCommentPost },
+        Esperado: { createCommentPost: true },
+      },
+    });
 
     expect(comment).toHaveProperty("createCommentPost");
     expect(comment.createCommentPost).toBe(true);

@@ -13,7 +13,8 @@
     "@faker-js/faker": "^6.0.0",
     "gql-query-builder": "^3.6.0",
     "jest": "^27.5.1",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1"
